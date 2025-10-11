@@ -13,7 +13,7 @@ const Home = () => {
       <div id="job-listing">
         <JobListing />
       </div>
-      <AppDownload />
+    
       <Footer />
     </div>
   );

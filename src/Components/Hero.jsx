@@ -181,13 +181,7 @@ const Hero = () => {
                 Browse All Jobs
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
-              <Button 
-                variant="outline" 
-                size="lg"
-                className="border-legpro-primary text-legpro-primary hover:bg-legpro-primary hover:text-white"
-              >
-                Upload Resume
-              </Button>
+              
             </div>
           </div>
 

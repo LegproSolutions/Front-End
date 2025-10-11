@@ -1,32 +1,17 @@
-// UserProfileForm.jsx
-import React, { useState, useEffect, useContext, useRef } from "react";
-import axios from "../../utils/axiosConfig";
-import { useNavigate } from "react-router-dom";
-import { AppContext } from "../../context/AppContext";
-import UserProfilePagination from "./UserProfilePagination";
-import toast from "react-hot-toast";
-import computeProfileCompletion from "../../utils/profileCompletion";
+import React, { useState } from 'react';
+import { User, Mail, Phone, MapPin, Briefcase, Award, Code, Globe, FileText, Camera, Calendar, Users } from 'lucide-react';
 
-const UserProfileForm = () => {
-  const navigate = useNavigate();
-  const {
-    isUserAuthenticated,
-    userData,
-    setUserData,
-    profileCompletion,
-    setProfileCompletion,
-  } = useContext(AppContext);
-  const formRef = useRef();
-  const backendUrl = import.meta.env?.VITE_API_URL;
-  const [loading, setLoading] = useState(false);
-
+const ModernUserProfileForm = () => {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [profileCompletion, setProfileCompletion] = useState(45);
+  
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+    firstName: "John",
+    lastName: "Doe",
     fatherName: "",
     gender: "",
     dateOfBirth: "",
-    email: "",
+    email: "john.doe@example.com",
     phone: "",
     aadharNumber: "",
     address: {
@@ -36,330 +21,413 @@ const UserProfileForm = () => {
       country: "",
       pincode: "",
     },
-    education: {
-      "10th": {
-        instituteType: "10th",
-        instituteFields: {
-          instituteName: "",
-          certificationBody: "",
-          passingYear: "",
-          percentage: "",
-          courseType: "",
-        },
-      },
-    },
-    experience: [
-      {
-        company: "",
-        position: "",
-        startDate: "",
-        endDate: "",
-        description: "",
-      },
-    ],
-    skills: [],
-    languages: [
-      {
-        name: "",
-        proficiency: "",
-      },
-    ],
-    resume: "",
-    profilePicture: "",
+    skills: ["JavaScript", "React", "Node.js"],
   });
 
-  // Update global profileCompletion in context whenever formData or userData change
-  useEffect(() => {
-    // Merge userData and formData so edited values reflect immediately
-    const merged = {
-      ...(userData || {}),
-      ...(formData || {}),
-      address: { ...(userData?.address || {}), ...(formData?.address || {}) },
-      education: {
-        ...(userData?.education || {}),
-        ...(formData?.education || {}),
-      },
-      experience:
-        formData?.experience && formData.experience.length
-          ? formData.experience
-          : userData?.experience,
-      skills:
-        formData?.skills && formData.skills.length
-          ? formData.skills
-          : userData?.skills,
-    };
+  const steps = [
+    { icon: User, label: "Personal Info", color: "from-blue-500 to-cyan-500" },
+    { icon: MapPin, label: "Address", color: "from-purple-500 to-pink-500" },
+    { icon: Award, label: "Education", color: "from-orange-500 to-red-500" },
+    { icon: Briefcase, label: "Experience", color: "from-green-500 to-teal-500" },
+    { icon: Code, label: "Skills", color: "from-indigo-500 to-purple-500" },
+  ];
 
-    const computed = computeProfileCompletion(merged);
-    setProfileCompletion?.(computed);
-  }, [formData, userData, setProfileCompletion]);
-
-  useEffect(() => {
-    const fetchProfile = async () => {
-      if (!isUserAuthenticated) {
-        navigate("/");
-        return;
-      }
-
-      try {
-        const response = await axios.get(`${backendUrl}/api/profile/get-user`);
-
-        if (response.data.success) {
-          // If the fetched profile has no education data, preserve your default education state.
-          setFormData((prev) => ({
-            ...response.data.profile,
-            education: response.data.profile.education || prev.education,
-          }));
-          setUserData(response.data.profile);
-        } else {
-          console.error("Failed to fetch profile:", response.data.message);
-        }
-      } catch (error) {
-        console.error("Error fetching profile:", error);
-        if (error.response?.status === 401) {
-          navigate("/");
-        }
-      }
-    };
-
-    fetchProfile();
-  }, [navigate, isUserAuthenticated, setUserData, backendUrl]);
-
-  const updateEducationData = (newEducationData) => {
-    setFormData((prev) => {
-      const updated = {
-        ...prev,
-        education: newEducationData,
-      };
-      return updated;
-    });
-  };
-
-  const handleSubmit = async (e) => {
-    e?.preventDefault();
-    // Step 0: Field Validations
-    const onlyLettersRegex = /^[A-Za-z ]+$/;
-
-    // First Name
-    if (formData.firstName.length < 2) {
-      toast.error("First name must be at least 2 characters long.");
-      return;
-    }
-    if (!onlyLettersRegex.test(formData.firstName)) {
-      toast.error("First name must contain only alphabets (A-Z, a-z).");
-      return;
-    }
-
-    // Last Name
-    if (formData.lastName.length < 2) {
-      toast.error("Last name must be at least 2 characters long.");
-      return;
-    }
-    if (!onlyLettersRegex.test(formData.lastName)) {
-      toast.error("Last name must contain only alphabets (A-Z, a-z).");
-      return;
-    }
-
-    // Father Name
-    if (formData.fatherName.length < 2) {
-      toast.error("Father's name must be at least 2 characters long.");
-      return;
-    }
-    if (!onlyLettersRegex.test(formData.fatherName)) {
-      toast.error("Father's name must contain only alphabets (A-Z, a-z).");
-      return;
-    }
-
-    // Phone
-    if (!/^\d{10}$/.test(formData.phone)) {
-      toast.error("Phone number must be exactly 10 digits.");
-      return;
-    }
-
-    // Aadhar Number
-    if (!/^\d{12}$/.test(formData.aadharNumber)) {
-      toast.error("Aadhar number must be exactly 12 digits.");
-      return;
-    }
-
-    try {
-      setLoading(true);
-
-      // Send the profile data to the API endpoint
-      const response = await axios.post(
-        `${backendUrl}/api/profile/create`,
-        formData
-      );
-
-      if (response.data.success) {
-        setUserData(response.data.profile);
-        toast.success("Profile updated successfully!");
-        navigate("/");
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      } else {
-        console.warn("Failed to update profile:", response.data.message);
-        toast.error("Failed to update profile: " + response.data.message);
-      }
-    } catch (error) {
-      console.error("Error updating profile:", error);
-      toast.error("Error updating profile. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Standard handleChange for non-nested fields
-  const handleChange = (e, section = null, index = null) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    if (section) {
-      if (index !== null) {
-        setFormData((prev) => ({
-          ...prev,
-          [section]: prev[section].map((item, i) =>
-            i === index
-              ? {
-                  ...item,
-                  [name]:
-                    name === "startDate" ||
-                    name === "endDate" ||
-                    name === "dateOfBirth"
-                      ? new Date(value).toISOString().split("T")[0]
-                      : value,
-                }
-              : item
-          ),
-        }));
-      } else {
-        setFormData((prev) => ({
-          ...prev,
-          [section]: {
-            ...prev[section],
-            [name]:
-              name === "startDate" ||
-              name === "endDate" ||
-              name === "dateOfBirth"
-                ? new Date(value).toISOString().split("T")[0]
-                : value,
-          },
-        }));
-      }
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]:
-          name === "startDate" || name === "endDate" || name === "dateOfBirth"
-            ? new Date(value).toISOString().split("T")[0]
-            : value,
-      }));
-    }
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  // Experience handling functions
-  const addExperience = () => {
-    setFormData((prev) => ({
-      ...prev,
-      experience: [
-        ...prev.experience,
-        {
-          company: "",
-          position: "",
-          startDate: "",
-          endDate: "",
-          description: "",
-        },
-      ],
-    }));
-  };
-
-  const removeExperience = (index) => {
-    setFormData((prev) => ({
-      ...prev,
-      experience: prev.experience.filter((_, i) => i !== index),
-    }));
-  };
-
-  const handleExperienceChange = (index, e) => {
+  const handleAddressChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
-      experience: prev.experience.map((item, i) =>
-        i === index
-          ? {
-              ...item,
-              [name]:
-                name === "startDate" || name === "endDate"
-                  ? new Date(value).toISOString().split("T")[0]
-                  : value,
-            }
-          : item
-      ),
-    }));
-  };
-
-  // Skills handling functions
-  const handleSkillsChange = (e) => {
-    const skills = e.target.value.split(",").map((skill) => skill.trim());
-    setFormData((prev) => ({
-      ...prev,
-      skills,
-    }));
-  };
-
-  const addSkill = () => {
-    const newSkill = prompt("Enter a new skill:");
-    if (newSkill && newSkill.trim()) {
-      setFormData((prev) => ({
-        ...prev,
-        skills: [...prev.skills, newSkill.trim()],
-      }));
-    }
-  };
-
-  const removeSkill = (index) => {
-    setFormData((prev) => ({
-      ...prev,
-      skills: prev.skills.filter((_, i) => i !== index),
+      address: { ...prev.address, [name]: value }
     }));
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-6 pb-16">
-      {/* Progress Indicator */}
-      <div className="mb-8 bg-white rounded-2xl shadow-lg p-6">
-        <div className="flex flex-col md:flex-row items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold text-gray-900">
-            Complete Your Profile
-          </h2>
-          <div className="flex items-center space-x-2">
-            <div className="w-40 bg-gray-200 rounded-full h-2">
-              <div
-                className="bg-amber-400 h-2 rounded-full"
-                style={{ width: `${profileCompletion}%` }}
-              ></div>
-            </div>
-            <span className="text-sm font-semibold text-gray-700">
-              {profileCompletion}%
-            </span>
-          </div>
-        </div>
-        <p className="text-gray-600">
-          Fill out all sections to maximize your job matching potential and
-          showcase your professional profile.
-        </p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-8 px-4">
+      {/* Floating Background Elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
+        <div className="absolute top-40 right-10 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute bottom-20 left-1/2 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" style={{ animationDelay: '2s' }}></div>
       </div>
 
-      <UserProfilePagination 
-        formData={formData}
-        setFormData={setFormData}
-        handleChange={handleChange}
-        updateEducationData={updateEducationData}
-        handleExperienceChange={handleExperienceChange}
-        addExperience={addExperience}
-        removeExperience={removeExperience}
-        onSubmit={handleSubmit}
-        loading={loading}
-      />
+      <div className="max-w-6xl mx-auto relative z-10">
+        {/* Header Card with Glassmorphism */}
+        <div className="backdrop-blur-xl bg-white/70 rounded-3xl shadow-2xl p-8 mb-8 border border-white/40">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
+            <div className="flex items-center gap-6">
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full blur-xl opacity-40 group-hover:opacity-60 transition-opacity"></div>
+                <div className="relative w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-xl">
+                  <Camera className="w-10 h-10 text-white" />
+                </div>
+              </div>
+              <div>
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                  Build Your Profile
+                </h1>
+                <p className="text-gray-600 mt-2">Complete your journey to success</p>
+              </div>
+            </div>
+            
+            {/* Animated Progress Circle */}
+            <div className="relative">
+              <svg className="w-32 h-32 transform -rotate-90">
+                <circle cx="64" cy="64" r="56" fill="none" stroke="#e5e7eb" strokeWidth="8"/>
+                <circle 
+                  cx="64" cy="64" r="56" fill="none" 
+                  stroke="url(#gradient)" 
+                  strokeWidth="8"
+                  strokeLinecap="round"
+                  strokeDasharray={`${2 * Math.PI * 56}`}
+                  strokeDashoffset={`${2 * Math.PI * 56 * (1 - profileCompletion / 100)}`}
+                  className="transition-all duration-1000 ease-out"
+                />
+                <defs>
+                  <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#3b82f6" />
+                    <stop offset="50%" stopColor="#8b5cf6" />
+                    <stop offset="100%" stopColor="#ec4899" />
+                  </linearGradient>
+                </defs>
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  {profileCompletion}%
+                </span>
+                <span className="text-xs text-gray-500">Complete</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Step Navigation */}
+        <div className="backdrop-blur-xl bg-white/70 rounded-3xl shadow-2xl p-6 mb-8 border border-white/40">
+          <div className="flex justify-between items-center overflow-x-auto pb-2">
+            {steps.map((step, index) => {
+              const Icon = step.icon;
+              const isActive = currentStep === index;
+              const isCompleted = currentStep > index;
+              
+              return (
+                <div key={index} className="flex items-center">
+                  <button
+                    onClick={() => setCurrentStep(index)}
+                    className={`flex flex-col items-center gap-2 transition-all duration-300 group ${
+                      isActive ? 'scale-110' : 'scale-100'
+                    }`}
+                  >
+                    <div className={`relative w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-300 ${
+                      isActive 
+                        ? `bg-gradient-to-br ${step.color} shadow-2xl` 
+                        : isCompleted
+                        ? 'bg-green-500 shadow-lg'
+                        : 'bg-gray-200 hover:bg-gray-300'
+                    }`}>
+                      {isCompleted ? (
+                        <div className="text-white text-2xl">✓</div>
+                      ) : (
+                        <Icon className={`w-7 h-7 ${isActive ? 'text-white' : 'text-gray-600'}`} />
+                      )}
+                      {isActive && (
+                        <div className="absolute inset-0 rounded-2xl bg-white/30 animate-ping"></div>
+                      )}
+                    </div>
+                    <span className={`text-xs font-medium whitespace-nowrap ${
+                      isActive ? 'text-gray-900' : 'text-gray-500'
+                    }`}>
+                      {step.label}
+                    </span>
+                  </button>
+                  {index < steps.length - 1 && (
+                    <div className={`h-1 w-12 mx-2 rounded-full transition-all duration-500 ${
+                      currentStep > index ? 'bg-gradient-to-r from-green-400 to-green-600' : 'bg-gray-200'
+                    }`}></div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Form Content Card */}
+        <div className="backdrop-blur-xl bg-white/70 rounded-3xl shadow-2xl p-8 border border-white/40">
+          {/* Personal Info Step */}
+          {currentStep === 0 && (
+            <div className="space-y-6 animate-fadeIn">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
+                  <User className="w-6 h-6 text-white" />
+                </div>
+                Personal Information
+              </h2>
+              
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="group">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">First Name</label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      name="firstName"
+                      value={formData.firstName}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 pl-12 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all outline-none bg-white/50"
+                      placeholder="Enter first name"
+                    />
+                    <User className="absolute left-4 top-3.5 w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+                  </div>
+                </div>
+
+                <div className="group">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Last Name</label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      name="lastName"
+                      value={formData.lastName}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 pl-12 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all outline-none bg-white/50"
+                      placeholder="Enter last name"
+                    />
+                    <User className="absolute left-4 top-3.5 w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+                  </div>
+                </div>
+
+                <div className="group">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Father's Name</label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      name="fatherName"
+                      value={formData.fatherName}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 pl-12 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all outline-none bg-white/50"
+                      placeholder="Enter father's name"
+                    />
+                    <Users className="absolute left-4 top-3.5 w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+                  </div>
+                </div>
+
+                <div className="group">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Date of Birth</label>
+                  <div className="relative">
+                    <input
+                      type="date"
+                      name="dateOfBirth"
+                      value={formData.dateOfBirth}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 pl-12 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all outline-none bg-white/50"
+                    />
+                    <Calendar className="absolute left-4 top-3.5 w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+                  </div>
+                </div>
+
+                <div className="group">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Email</label>
+                  <div className="relative">
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 pl-12 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all outline-none bg-white/50"
+                      placeholder="your.email@example.com"
+                    />
+                    <Mail className="absolute left-4 top-3.5 w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+                  </div>
+                </div>
+
+                <div className="group">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Phone Number</label>
+                  <div className="relative">
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 pl-12 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all outline-none bg-white/50"
+                      placeholder="10-digit number"
+                    />
+                    <Phone className="absolute left-4 top-3.5 w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+                  </div>
+                </div>
+
+                <div className="group md:col-span-2">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Gender</label>
+                  <div className="flex gap-4">
+                    {['Male', 'Female', 'Other'].map((gender) => (
+                      <label key={gender} className="flex items-center gap-2 cursor-pointer group/radio">
+                        <input
+                          type="radio"
+                          name="gender"
+                          value={gender}
+                          checked={formData.gender === gender}
+                          onChange={handleChange}
+                          className="w-5 h-5 text-blue-500 focus:ring-blue-500"
+                        />
+                        <span className="text-gray-700 group-hover/radio:text-blue-600 transition-colors">{gender}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Address Step */}
+          {currentStep === 1 && (
+            <div className="space-y-6 animate-fadeIn">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                  <MapPin className="w-6 h-6 text-white" />
+                </div>
+                Address Details
+              </h2>
+              
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="md:col-span-2 group">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Street Address</label>
+                  <input
+                    type="text"
+                    name="street"
+                    value={formData.address.street}
+                    onChange={handleAddressChange}
+                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all outline-none bg-white/50"
+                    placeholder="House no., Street name"
+                  />
+                </div>
+
+                <div className="group">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">City</label>
+                  <input
+                    type="text"
+                    name="city"
+                    value={formData.address.city}
+                    onChange={handleAddressChange}
+                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all outline-none bg-white/50"
+                    placeholder="City name"
+                  />
+                </div>
+
+                <div className="group">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">State</label>
+                  <input
+                    type="text"
+                    name="state"
+                    value={formData.address.state}
+                    onChange={handleAddressChange}
+                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all outline-none bg-white/50"
+                    placeholder="State name"
+                  />
+                </div>
+
+                <div className="group">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Country</label>
+                  <input
+                    type="text"
+                    name="country"
+                    value={formData.address.country}
+                    onChange={handleAddressChange}
+                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all outline-none bg-white/50"
+                    placeholder="Country name"
+                  />
+                </div>
+
+                <div className="group">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">PIN Code</label>
+                  <input
+                    type="text"
+                    name="pincode"
+                    value={formData.address.pincode}
+                    onChange={handleAddressChange}
+                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all outline-none bg-white/50"
+                    placeholder="6-digit PIN"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Skills Step */}
+          {currentStep === 4 && (
+            <div className="space-y-6 animate-fadeIn">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center">
+                  <Code className="w-6 h-6 text-white" />
+                </div>
+                Your Skills
+              </h2>
+              
+              <div className="flex flex-wrap gap-3 mb-6">
+                {formData.skills.map((skill, index) => (
+                  <div key={index} className="group relative">
+                    <div className="px-5 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-full font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">
+                      {skill}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="group">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Add Skills (comma-separated)</label>
+                <textarea
+                  className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all outline-none bg-white/50 min-h-[120px]"
+                  placeholder="JavaScript, React, Node.js, Python..."
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Navigation Buttons */}
+          <div className="flex justify-between mt-8 pt-6 border-t border-gray-200">
+            <button
+              onClick={() => setCurrentStep(Math.max(0, currentStep - 1))}
+              disabled={currentStep === 0}
+              className={`px-8 py-3 rounded-xl font-semibold transition-all ${
+                currentStep === 0
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300 hover:shadow-lg transform hover:-translate-y-0.5'
+              }`}
+            >
+              Previous
+            </button>
+
+            {currentStep < steps.length - 1 ? (
+              <button
+                onClick={() => setCurrentStep(Math.min(steps.length - 1, currentStep + 1))}
+                className="px-8 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all"
+              >
+                Next Step
+              </button>
+            ) : (
+              <button className="px-8 py-3 rounded-xl bg-gradient-to-r from-green-600 to-teal-600 text-white font-semibold hover:from-green-700 hover:to-teal-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all">
+                Submit Profile
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <style jsx>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.5s ease-out;
+        }
+      `}</style>
     </div>
   );
 };
 
-export default UserProfileForm;
+export default ModernUserProfileForm;

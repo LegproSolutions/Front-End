@@ -1,12 +1,19 @@
 import React, { useState } from "react";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
-import { Mail, Phone, MapPin, Send, User, MessageSquare } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, User, MessageSquare, Clock, Linkedin, Twitter, Facebook } from 'lucide-react';
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 
 const ContactUs = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    subject: '',
     message: '',
     consent: false
   });
@@ -23,176 +30,239 @@ const ContactUs = () => {
     e.preventDefault();
     console.log('Form submitted:', formData);
     alert('Thank you for contacting us! We will get back to you soon.');
-    setFormData({ name: '', email: '', message: '', consent: false });
+    setFormData({ name: '', email: '', subject: '', message: '', consent: false });
   };
 
   return (
     <>
       <Navbar />
-      <div className="min-h-screen ">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-          <div className="text-center mb-6 sm:mb-8">
-            <div className="inline-flex items-center justify-center w-12 h-12 bg-amber-100 rounded-full mb-3">
-              <Mail className="w-6 h-6 text-amber-800" />
-            </div>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
-              Contact Us
-            </h1>
-            <p className="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto">
-              Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+      <div className="bg-[#F8FAFF] py-16 px-4">
+        <div className="container mx-auto max-w-6xl">
+          {/* Header Section */}
+          <div className="text-center mb-12">
+            <h1 className="text-3xl md:text-4xl font-bold text-[#0F3B7A]">Get in Touch</h1>
+            <p className="mt-3 text-gray-600 max-w-2xl mx-auto">
+              Have questions about Job Mela? Need help with your account? Our team is here to assist you.
+              We aim to respond to all inquiries within 24 business hours.
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-6 lg:gap-8">
-            <div className="lg:col-span-1 space-y-4">
-              <div className="bg-white rounded-xl p-5 shadow-sm border border-amber-100 hover:shadow-md transition-shadow">
+          <div className="grid lg:grid-cols-3 gap-8">
+            {/* Contact Information Panel */}
+            <Card className="lg:col-span-1 shadow-md overflow-hidden">
+              <CardHeader className="bg-[#0F3B7A] text-white p-6">
+                <h2 className="text-xl font-semibold flex items-center">
+                  <MessageSquare className="mr-2 h-5 w-5" />
+                  Contact Information
+                </h2>
+              </CardHeader>
+              <CardContent className="p-6 space-y-6">
                 <div className="flex items-start">
-                  <div className="flex-shrink-0 w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center mr-4">
-                    <Mail className="w-5 h-5 text-amber-800" />
+                  <div className="bg-[#E8F0FF] p-2 rounded-full mr-4">
+                    <Mail className="h-5 w-5 text-[#0F3B7A]" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">Email Us</h3>
-                    <p className="text-sm text-gray-600 mb-2">We're here to help</p>
-                    <a href="mailto:support@jobmela.com" className="text-amber-800 font-medium hover:underline text-sm">
-                      support@jobmela.com
-                    </a>
+                    <p className="text-sm font-medium text-gray-700">Email Us</p>
+                    <p className="text-sm text-gray-600">support@jobmela.com</p>
+                    <p className="text-sm text-gray-600">careers@jobmela.com</p>
                   </div>
                 </div>
-              </div>
 
-              <div className="bg-white rounded-xl p-5 shadow-sm border border-amber-100 hover:shadow-md transition-shadow">
                 <div className="flex items-start">
-                  <div className="flex-shrink-0 w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center mr-4">
-                    <Phone className="w-5 h-5 text-amber-800" />
+                  <div className="bg-[#E8F0FF] p-2 rounded-full mr-4">
+                    <Phone className="h-5 w-5 text-[#0F3B7A]" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">Call Us</h3>
-                    <p className="text-sm text-gray-600 mb-2">Mon-Fri 9am-6pm</p>
-                    <a href="tel:+911234567890" className="text-amber-800 font-medium hover:underline text-sm">
-                      0120-4914498
-                    </a>
+                    <p className="text-sm font-medium text-gray-700">Call Us</p>
+                    <p className="text-sm text-gray-600">+1 (555) 123-4567</p>
+                    <p className="text-sm text-gray-600">Mon-Fri, 9:00 AM - 6:00 PM</p>
                   </div>
                 </div>
-              </div>
 
-              <div className="bg-white rounded-xl p-5 shadow-sm border border-amber-100 hover:shadow-md transition-shadow">
                 <div className="flex items-start">
-                  <div className="flex-shrink-0 w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center mr-4">
-                    <MapPin className="w-5 h-5 text-amber-800" />
+                  <div className="bg-[#E8F0FF] p-2 rounded-full mr-4">
+                    <MapPin className="h-5 w-5 text-[#0F3B7A]" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">Visit Us</h3>
-                    <p className="text-sm text-gray-600 mb-2">Come say hello</p>
-                    <p className="text-sm text-gray-700">
-                      173, 7th Floor, Tower A, Corenthum, Sector 62, Opp. Electronic City Metro Station, Noida-201309<br />India
+                    <p className="text-sm font-medium text-gray-700">Office Address</p>
+                    <p className="text-sm text-gray-600">
+                      123 Job Mela Lane, 
+                      <br />Business District,
+                      <br />City, Country 12345
                     </p>
                   </div>
                 </div>
-              </div>
 
-              <div className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl p-5 border border-amber-200">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Quick Response</h3>
-                <p className="text-sm text-gray-700">
-                  We typically respond within 24 hours during business days. For urgent matters, please call us directly.
-                </p>
-              </div>
-            </div>
+                <Separator className="my-4" />
 
-            <div className="lg:col-span-2">
-              <div className="bg-white rounded-xl shadow-lg border border-amber-100 p-6 sm:p-8">
-                <div className="mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Send us a Message</h2>
-                  <p className="text-gray-600 text-sm">Fill out the form below and we'll get back to you shortly.</p>
+                <div>
+                  <p className="text-sm font-medium text-gray-700 mb-2">Follow Us</p>
+                  <div className="flex space-x-4">
+                    <a 
+                      href="#" 
+                      className="bg-[#E8F0FF] hover:bg-[#D1E3FF] p-2 rounded-full transition-colors"
+                    >
+                      <Linkedin className="h-5 w-5 text-[#0F3B7A]" />
+                    </a>
+                    <a 
+                      href="#" 
+                      className="bg-[#E8F0FF] hover:bg-[#D1E3FF] p-2 rounded-full transition-colors"
+                    >
+                      <Twitter className="h-5 w-5 text-[#0F3B7A]" />
+                    </a>
+                    <a 
+                      href="#" 
+                      className="bg-[#E8F0FF] hover:bg-[#D1E3FF] p-2 rounded-full transition-colors"
+                    >
+                      <Facebook className="h-5 w-5 text-[#0F3B7A]" />
+                    </a>
+                  </div>
                 </div>
+              </CardContent>
+            </Card>
 
-                <div className="space-y-5">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-2">
-                      Your Name <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <User className="h-5 w-5 text-gray-400" />
+            {/* Contact Form */}
+            <Card className="lg:col-span-2 shadow-md">
+              <CardHeader className="p-6 border-b">
+                <h2 className="text-xl font-semibold text-[#0F3B7A]">Send us a Message</h2>
+                <p className="text-sm text-gray-600 mt-1">
+                  Fill out the form below and we'll get back to you as soon as possible.
+                </p>
+              </CardHeader>
+              <CardContent className="p-6">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="name" className="text-sm font-medium">
+                        Full Name
+                      </Label>
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                          <User className="h-4 w-4 text-gray-400" />
+                        </div>
+                        <Input 
+                          id="name"
+                          name="name"
+                          value={formData.name}
+                          onChange={handleChange}
+                          placeholder="John Doe" 
+                          className="pl-10"
+                          required
+                        />
                       </div>
-                      <input
-                        type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        placeholder="John Doe"
-                        required
-                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all"
-                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="email" className="text-sm font-medium">
+                        Email Address
+                      </Label>
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                          <Mail className="h-4 w-4 text-gray-400" />
+                        </div>
+                        <Input 
+                          id="email"
+                          name="email"
+                          type="email"
+                          value={formData.email}
+                          onChange={handleChange}
+                          placeholder="you@example.com" 
+                          className="pl-10"
+                          required
+                        />
+                      </div>
                     </div>
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-2">
-                      Email Address <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Mail className="h-5 w-5 text-gray-400" />
-                      </div>
-                      <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        placeholder="john@example.com"
-                        required
-                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all"
-                      />
-                    </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="subject" className="text-sm font-medium">
+                      Subject
+                    </Label>
+                    <Input 
+                      id="subject"
+                      name="subject"
+                      value={formData.subject}
+                      onChange={handleChange}
+                      placeholder="How can we help you?" 
+                      required
+                    />
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-2">
-                      Your Message <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
-                      <div className="absolute top-3 left-3 pointer-events-none">
-                        <MessageSquare className="h-5 w-5 text-gray-400" />
-                      </div>
-                      <textarea
-                        name="message"
-                        value={formData.message}
-                        onChange={handleChange}
-                        rows="5"
-                        placeholder="Tell us how we can help you..."
-                        required
-                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all resize-none"
-                      ></textarea>
-                    </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="message" className="text-sm font-medium">
+                      Message
+                    </Label>
+                    <Textarea 
+                      id="message"
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
+                      rows={6}
+                      placeholder="Please describe your inquiry in detail..." 
+                      className="resize-none"
+                      required
+                    />
                   </div>
 
-                  <div className="flex items-start">
-                    <input
+                  <div className="flex items-center gap-2">
+                    <input 
                       type="checkbox"
+                      id="consent"
                       name="consent"
                       checked={formData.consent}
                       onChange={handleChange}
+                      className="rounded text-[#0F3B7A]"
                       required
-                      className="mt-1 h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded"
                     />
-                    <label className="ml-2 text-xs text-gray-600">
-                      I agree to the processing of my personal data according to the Privacy Policy
-                    </label>
+                    <Label htmlFor="consent" className="text-xs text-gray-600">
+                      I consent to Job Mela storing my data to respond to my inquiry
+                    </Label>
                   </div>
+                </form>
+              </CardContent>
+              <CardFooter className="flex justify-end border-t p-6 bg-gray-50">
+                <Button 
+                  type="submit"
+                  onClick={handleSubmit}
+                  className="bg-[#0F3B7A] hover:bg-[#0b2b5a] text-white flex items-center gap-2"
+                >
+                  <Send className="h-4 w-4" />
+                  Send Message
+                </Button>
+              </CardFooter>
+            </Card>
+          </div>
 
-                  <button
-                    onClick={handleSubmit}
-                    className="w-full bg-amber-800 text-white px-6 py-3 rounded-lg font-semibold hover:bg-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 transition-all duration-200 flex items-center justify-center group"
-                  >
-                    <span>Send Message</span>
-                    <Send className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                  </button>
-                </div>
+          {/* Map or Additional Information - Optional */}
+          <div className="mt-16 p-6 bg-white rounded-lg shadow-md">
+            <h2 className="text-xl font-semibold text-[#0F3B7A] mb-6">Frequently Asked Questions</h2>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <h3 className="font-medium text-gray-800">How do I create an account on Job Mela?</h3>
+                <p className="text-sm text-gray-600 mt-1">
+                  Click on the "Sign Up" button in the top right corner and follow the simple registration process.
+                </p>
+              </div>
+              <div>
+                <h3 className="font-medium text-gray-800">How can recruiters post job listings?</h3>
+                <p className="text-sm text-gray-600 mt-1">
+                  Recruiters can sign up for a company account and access the dashboard to post job listings.
+                </p>
+              </div>
+              <div>
+                <h3 className="font-medium text-gray-800">Is Job Mela available in multiple languages?</h3>
+                <p className="text-sm text-gray-600 mt-1">
+                  Currently, Job Mela is available in English. We're working on adding more languages soon.
+                </p>
+              </div>
+              <div>
+                <h3 className="font-medium text-gray-800">How do I report an issue with the platform?</h3>
+                <p className="text-sm text-gray-600 mt-1">
+                  You can report issues through this contact form or by emailing support@jobmela.com.
+                </p>
               </div>
             </div>
           </div>
-
-
         </div>
       </div>
       <Footer />

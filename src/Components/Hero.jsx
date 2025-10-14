@@ -136,19 +136,7 @@ const Hero = () => {
                     </datalist>
                   </div>
 
-                  {/* Job Type */}
-                  <div className="relative">
-                    <select 
-                      value={selectedJobType}
-                      onChange={(e) => setSelectedJobType(e.target.value)}
-                      className="w-full h-12 px-3 text-base border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-legpro-primary focus:border-transparent"
-                    >
-                      <option value="">Job Type</option>
-                      {jobTypes.map((type, index) => (
-                        <option key={index} value={type}>{type}</option>
-                      ))}
-                    </select>
-                  </div>
+               
                 </div>
                 
                 <Button 

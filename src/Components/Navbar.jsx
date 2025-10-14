@@ -31,9 +31,8 @@ const Navbar = () => {
 
   const navigationItems = [
     { name: "Home", href: "/", icon: Home },
-    { name: "Find Jobs", href: "/jobs", icon: Search },
     { name: "Applied Jobs", href: "/application", icon: FileText },
-    { name: "Companies", href: "/companies", icon: Building2 },
+    
   ];
 
   const isActiveRoute = (href) => location.pathname === href;
@@ -151,10 +150,7 @@ const Navbar = () => {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link to="/settings" className="flex items-center cursor-pointer">
-                        <Settings className="mr-3 h-4 w-4 text-gray-600" />
-                        <span>Settings</span>
-                      </Link>
+                     
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem 
@@ -253,14 +249,7 @@ const Navbar = () => {
                           <User className="h-4 w-4" />
                           <span>My Profile</span>
                         </Link>
-                        <Link
-                          to="/settings"
-                          onClick={() => setMobileMenuOpen(false)}
-                          className="flex items-center space-x-3 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors hover:bg-gray-100 text-gray-600"
-                        >
-                          <Settings className="h-4 w-4" />
-                          <span>Settings</span>
-                        </Link>
+                 
                         <Button
                           variant="ghost"
                           onClick={() => {

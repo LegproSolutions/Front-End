@@ -82,24 +82,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Help & Support */}
-          <div>
-            <h4 className="font-semibold mb-3 uppercase tracking-wider text-gray-900">
-              Help & Support
-            </h4>
-            <ul className="space-y-2 text-gray-600">
-              <li>
-                <a href="#" className="hover:text-gray-900 transition">
-                  Help Center
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-gray-900 transition">
-                  Report Issue
-                </a>
-              </li>
-            </ul>
-          </div>
+          
 
           {/* Legal */}
           <div>
@@ -116,9 +99,7 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/terms" className="hover:text-gray-900 transition">
-                  Terms & Conditions
-                </Link>
+                
               </li>
               <li>
                 <Link

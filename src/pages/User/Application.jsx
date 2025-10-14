@@ -1,10 +1,10 @@
 import React, { useContext, useState } from "react";
-import { FaUpload } from "react-icons/fa";
+import { FaUpload, FaFileAlt } from "react-icons/fa";
 import { AppContext } from "../../context/AppContext";
 import Navbar from "../../Components/Navbar";
 import Footer from "../../Components/Footer";
 import moment from "moment";
-import axios from "../../utils/axiosConfig"
+import axios from "../../utils/axiosConfig";
 import { Loader2 } from "lucide-react";
 
 const Application = () => {
@@ -14,33 +14,24 @@ const Application = () => {
   const [uploading, setUploading] = useState(false);
   const backendUrl = import.meta.env?.VITE_API_URL;
 
-  // Get the updateUserResume function and user applications from context
   const { userData, updateUserResume, userApplications, setUserData } =
     useContext(AppContext);
 
   const handleResumeChange = (event) => {
     const file = event.target.files[0];
     if (file) {
-      setResume(file); // Store the actual file object
+      setResume(file);
     }
   };
 
-  // const handleSave = async () => {
-  //   if (resume) {
-  //     // Call the API to update resume (uploading to Cloudinary via your backend)
-  //     await updateUserResume(resume);
-  //     setIsEdit(false);
-  //   }
-  // };
-
   const handleSave = async () => {
     if (resume) {
-      setUploading(true); // ⏳ start spinner
+      setUploading(true);
       const result = await updateUserResume(resume);
-  
+
       if (result.success) {
         const userRes = await axios.get(`${backendUrl}/api/users/user`);
-  
+
         if (userRes.data.success) {
           setUserData({ ...userRes.data.user });
           setResume(null);
@@ -49,184 +40,205 @@ const Application = () => {
       } else {
         console.error(result.message);
       }
-  
-      setUploading(false); // ✅ stop spinner
+
+      setUploading(false);
     }
   };
-  
+
   return (
     <>
       <Navbar />
-      <div className="container mx-auto px-4 md:px-10 lg:px-20 my-10 min-h-[70vh]">
-        {/* Resume & Job Search Toggle Section */}
-        <div className="bg-white shadow-lg rounded-lg p-6 mb-8 border border-gray-200">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            {/* Resume Section */}
-            <div>
-              <h2 className="text-2xl font-semibold text-gray-900">
-                Your Resume
-              </h2>
-              <p className="text-gray-500 text-sm mt-1">
-                Upload and manage your resume for job applications.
-              </p>
-              <div className="flex flex-col md:flex-row gap-4 items-center mt-4">
-                {isEdit ? (
-                  <>
-                    <label
-                      htmlFor="resume-upload"
-                      className="cursor-pointer flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md font-medium shadow-md hover:bg-blue-700 transition"
-                    >
-                      <FaUpload className="text-lg" /> Select Resume
-                    </label>
-                    <input
-                      id="resume-upload"
-                      type="file"
-                      accept="application/pdf"
-                      className="hidden"
-                      onChange={handleResumeChange}
-                    />
-                    {resume && (
-                      <p className="text-gray-700 text-sm truncate w-48">
-                        {resume.name}
-                      </p>
-                    )}
-                    {resume && (
-                      <button
-                      onClick={handleSave}
-                      disabled={uploading}
-                      className={`bg-green-600 text-white px-4 py-2 rounded-md font-medium shadow-md transition flex items-center justify-center gap-2 ${
-                        uploading ? "opacity-70 cursor-not-allowed" : "hover:bg-green-700"
-                      }`}
-                    >
-                      {uploading ? (
-                        <>
-                          <Loader2 className="animate-spin w-4 h-4" />
-                          Uploading...
-                        </>
-                      ) : (
-                        "Save"
-                      )}
-                    </button>
-                    )}
-                  </>
-                ) : (
-                  <div className="flex items-center gap-4">
-                    {userData && userData.resume ? (
-                      <a
-                        href={userData.resume}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="bg-blue-600 text-white px-4 py-2 rounded-md font-medium shadow-md hover:bg-blue-700 transition"
-                      >
-                        View Resume
-                      </a>
-                    ) : (
-                      <p className="text-gray-500">No resume uploaded</p>
-                    )}
-                    <button
-                      onClick={() => setIsEdit(true)}
-                      className="text-gray-600 border border-gray-300 rounded-md px-4 py-2 font-medium shadow-md hover:bg-gray-100 transition"
-                    >
-                      Edit
-                    </button>
+      <div className="bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/40 min-h-screen py-8">
+        <div className="container mx-auto px-4 md:px-10 lg:px-20 my-10">
+          {/* Resume & Job Search Toggle Section */}
+          <div className="bg-white shadow-sm rounded-2xl p-8 mb-8 border border-slate-200/60 hover:shadow-md transition-shadow duration-300">
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+              {/* Resume Section */}
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="p-2.5 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg">
+                    <FaFileAlt className="text-white text-xl" />
                   </div>
-                )}
-              </div>
-            </div>
-            {/* Looking for Job Toggle */}
-            <div className="flex items-center gap-3 mt-6 md:mt-0">
-              <p className="text-gray-700 font-medium">Looking for a Job?</p>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  className="sr-only peer"
-                  checked={lookingForJob}
-                  onChange={() => setLookingForJob(!lookingForJob)}
-                />
-                <div className="w-12 h-6 bg-gray-300 peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-6 peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-green-500"></div>
-              </label>
-              <span
-                className={`text-sm font-medium ${
-                  lookingForJob ? "text-green-600" : "text-gray-500"
-                }`}
-              >
-                {lookingForJob ? "Yes" : "No"}
-              </span>
-            </div>
-          </div>
-        </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-slate-800">
+                      Your Resume
+                    </h2>
+                    <p className="text-slate-500 text-sm">
+                      Upload and manage your resume for job applications
+                    </p>
+                  </div>
+                </div>
 
-        {/* Jobs Applied Section */}
-        <div className="bg-white shadow-lg rounded-lg p-6 border border-gray-200">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-            Jobs Applied
-          </h2>
-          <p className="text-gray-500 text-sm mb-4">
-            Track the jobs you have applied for.
-          </p>
-          <div className="overflow-x-auto">
-            {userApplications && userApplications.length > 0 ? (
-              <table className="w-full border-collapse rounded-lg">
-                <thead>
-                  <tr className="bg-gray-200 text-gray-800 text-sm">
-                    <th className="p-4 text-left">Company</th>
-                    <th className="p-4 text-left">Job Title</th>
-                    <th className="p-4 text-left">Location</th>
-                    <th className="p-4 text-left">Date</th>
-                    <th className="p-4 text-left">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {userApplications.map((app, index) => (
-                    <tr
-                      key={index}
-                      className={`border-b ${
-                        index % 2 === 0 ? "bg-gray-100" : "bg-white"
-                      } hover:bg-gray-50 transition text-sm`}
-                    >
-                      <td className="p-4 flex items-center gap-3">
-                        <img
-                          src={app.companyId?.image}
-                          alt="Company Logo"
-                          className="h-10 w-10 rounded-md shadow-sm"
-                        />
-                        <span className="font-medium text-gray-800">
-                          {app.companyId?.name || "Unknown Company"}
-                        </span>
-                      </td>
-                      <td className="p-4 text-gray-700">
-                        {app.jobId?.title || "N/A"}
-                      </td>
-                      <td className="p-4 text-gray-700">
-                        {app.jobId?.location || "N/A"}
-                      </td>
-                      <td className="p-4 text-gray-500">
-                        {app.jobId
-                          ? moment(app.jobId.date).format("ll")
-                          : "N/A"}
-                      </td>
-                      <td className="p-4">
-                        <span
-                          className={`px-3 py-1 rounded-md text-xs font-medium ${
-                            app.status === "Accepted"
-                              ? "bg-green-500 text-white"
-                              : app.status === "Rejected"
-                              ? "bg-red-500 text-white"
-                              : "bg-yellow-500 text-white"
+                <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center mt-6">
+                  {isEdit ? (
+                    <>
+                      <label
+                        htmlFor="resume-upload"
+                        className="cursor-pointer flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white px-5 py-2.5 rounded-lg font-medium shadow-sm hover:shadow-md hover:from-indigo-700 hover:to-indigo-800 transition-all duration-200"
+                      >
+                        <FaUpload className="text-base" /> Select Resume
+                      </label>
+                      <input
+                        id="resume-upload"
+                        type="file"
+                        accept="application/pdf"
+                        className="hidden"
+                        onChange={handleResumeChange}
+                      />
+                      {resume && (
+                        <div className="flex items-center gap-2 bg-slate-100 px-4 py-2.5 rounded-lg border border-slate-200">
+                          <FaFileAlt className="text-slate-600 text-sm" />
+                          <p className="text-slate-700 text-sm font-medium truncate max-w-xs">
+                            {resume.name}
+                          </p>
+                        </div>
+                      )}
+                      {resume && (
+                        <button
+                          onClick={handleSave}
+                          disabled={uploading}
+                          className={`bg-gradient-to-r from-emerald-600 to-emerald-700 text-white px-5 py-2.5 rounded-lg font-medium shadow-sm transition-all duration-200 flex items-center justify-center gap-2 ${
+                            uploading
+                              ? "opacity-60 cursor-not-allowed"
+                              : "hover:shadow-md hover:from-emerald-700 hover:to-emerald-800"
                           }`}
                         >
-                          {app.status}
-                        </span>
-                      </td>
+                          {uploading ? (
+                            <>
+                              <Loader2 className="animate-spin w-4 h-4" />
+                              Uploading...
+                            </>
+                          ) : (
+                            "Save Resume"
+                          )}
+                        </button>
+                      )}
+                    </>
+                  ) : (
+                    <div className="flex items-center gap-3">
+                      {userData && userData.resume ? (
+                        <a
+                          href={userData.resume}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="bg-gradient-to-r from-indigo-600 to-indigo-700 text-white px-5 py-2.5 rounded-lg font-medium shadow-sm hover:shadow-md hover:from-indigo-700 hover:to-indigo-800 transition-all duration-200"
+                        >
+                          View Resume
+                        </a>
+                      ) : (
+                        <p className="text-slate-500 bg-slate-100 px-4 py-2.5 rounded-lg border border-slate-200">
+                          No resume uploaded
+                        </p>
+                      )}
+                      <button
+                        onClick={() => setIsEdit(true)}
+                        className="text-slate-700 bg-white border border-slate-300 rounded-lg px-5 py-2.5 font-medium shadow-sm hover:bg-slate-50 hover:border-slate-400 transition-all duration-200"
+                      >
+                        Edit
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+             
+            </div>
+          </div>
+
+          {/* Jobs Applied Section */}
+          <div className="bg-white shadow-sm rounded-2xl p-8 border border-slate-200/60 hover:shadow-md transition-shadow duration-300">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="h-1 w-12 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full"></div>
+              <h2 className="text-2xl font-bold text-slate-800">
+                Application History
+              </h2>
+            </div>
+            <p className="text-slate-500 text-sm mb-6">
+              Track and monitor your job application status
+            </p>
+            
+            <div className="overflow-x-auto rounded-xl border border-slate-200">
+              {userApplications && userApplications.length > 0 ? (
+                <table className="w-full">
+                  <thead>
+                    <tr className="bg-gradient-to-r from-slate-100 to-slate-50 border-b border-slate-200">
+                      <th className="p-4 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">
+                        Company
+                      </th>
+                      <th className="p-4 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">
+                        Job Title
+                      </th>
+                      <th className="p-4 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">
+                        Location
+                      </th>
+                      <th className="p-4 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">
+                        Applied Date
+                      </th>
+                      <th className="p-4 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">
+                        Status
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <p className="text-center text-gray-600">
-                No applications found.
-              </p>
-            )}
+                  </thead>
+                  <tbody>
+                    {userApplications.map((app, index) => (
+                      <tr
+                        key={index}
+                        className="border-b border-slate-100 hover:bg-slate-50/50 transition-colors duration-150"
+                      >
+                        <td className="p-4">
+                          <div className="flex items-center gap-3">
+                            <img
+                              src={app.companyId?.image}
+                              alt="Company Logo"
+                              className="h-11 w-11 rounded-lg shadow-sm border border-slate-200 object-cover"
+                            />
+                            <span className="font-semibold text-slate-800">
+                              {app.companyId?.name || "Unknown Company"}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="p-4 text-slate-700 font-medium">
+                          {app.jobId?.title || "N/A"}
+                        </td>
+                        <td className="p-4 text-slate-600">
+                          {app.jobId?.location || "N/A"}
+                        </td>
+                        <td className="p-4 text-slate-500 text-sm">
+                          {app.jobId
+                            ? moment(app.jobId.date).format("MMM DD, YYYY")
+                            : "N/A"}
+                        </td>
+                        <td className="p-4">
+                          <span
+                            className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold ${
+                              app.status === "Accepted"
+                                ? "bg-emerald-100 text-emerald-700 border border-emerald-200"
+                                : app.status === "Rejected"
+                                ? "bg-rose-100 text-rose-700 border border-rose-200"
+                                : "bg-amber-100 text-amber-700 border border-amber-200"
+                            }`}
+                          >
+                            {app.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <div className="text-center py-12">
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 mb-4">
+                    <FaFileAlt className="text-slate-400 text-2xl" />
+                  </div>
+                  <p className="text-slate-600 font-medium">
+                    No applications found
+                  </p>
+                  <p className="text-slate-500 text-sm mt-1">
+                    Start applying to jobs to see them here
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

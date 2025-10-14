@@ -1,9 +1,16 @@
-import React, { useState } from 'react';
-import { User, Mail, Phone, MapPin, Briefcase, Award, Code, Globe, FileText, Camera, Calendar, Users } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { User, Mail, Phone, MapPin, Briefcase, Award, Code, FileText, Camera, Calendar, Users, Upload, File, X, Check, AlertTriangle } from 'lucide-react';
+import axios from '../../utils/axiosConfig';
 
 const ModernUserProfileForm = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [profileCompletion, setProfileCompletion] = useState(45);
+  const fileInputRef = useRef(null);
+  const [resumeUploadStatus, setResumeUploadStatus] = useState({
+    loading: false,
+    error: null,
+    success: false,
+  });
   
   const [formData, setFormData] = useState({
     firstName: "John",
@@ -22,6 +29,7 @@ const ModernUserProfileForm = () => {
       pincode: "",
     },
     skills: ["JavaScript", "React", "Node.js"],
+    resume: null, // To store resume information
   });
 
   const steps = [
@@ -30,6 +38,7 @@ const ModernUserProfileForm = () => {
     { icon: Award, label: "Education", color: "from-orange-500 to-red-500" },
     { icon: Briefcase, label: "Experience", color: "from-green-500 to-teal-500" },
     { icon: Code, label: "Skills", color: "from-indigo-500 to-purple-500" },
+    { icon: FileText, label: "Resume", color: "from-teal-500 to-emerald-500" },
   ];
 
   const handleChange = (e) => {
@@ -43,6 +52,78 @@ const ModernUserProfileForm = () => {
       ...prev,
       address: { ...prev.address, [name]: value }
     }));
+  };
+  
+  const handleFileClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    
+    // Check if file is selected
+    if (!file) return;
+    
+    // Validate file is PDF
+    if (file.type !== 'application/pdf') {
+      setResumeUploadStatus({
+        loading: false,
+        error: 'Only PDF files are allowed',
+        success: false
+      });
+      return;
+    }
+    
+    // Check file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setResumeUploadStatus({
+        loading: false,
+        error: 'File size should be less than 5MB',
+        success: false
+      });
+      return;
+    }
+
+    setResumeUploadStatus({
+      loading: true,
+      error: null,
+      success: false
+    });
+
+    try {
+      const formDataForUpload = new FormData();
+      formDataForUpload.append('resume', file);
+      
+      const response = await axios.post('/api/profile/upload-resume', formDataForUpload, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      if (response.data.success) {
+        setFormData(prev => ({ 
+          ...prev, 
+          resume: {
+            url: response.data.url,
+            publicId: response.data.publicId,
+            originalName: file.name
+          }
+        }));
+        
+        setResumeUploadStatus({
+          loading: false,
+          error: null,
+          success: true
+        });
+      }
+    } catch (error) {
+      console.error('Resume upload error:', error);
+      setResumeUploadStatus({
+        loading: false,
+        error: error.response?.data?.message || 'Error uploading resume',
+        success: false
+      });
+    }
   };
 
   return (
@@ -106,7 +187,7 @@ const ModernUserProfileForm = () => {
 
         {/* Step Navigation */}
         <div className="backdrop-blur-xl bg-white/70 rounded-3xl shadow-2xl p-6 mb-8 border border-white/40">
-          <div className="flex justify-between items-center overflow-x-auto pb-2">
+          <div className="flex justify-between items-center pb-2 overflow-hidden">
             {steps.map((step, index) => {
               const Icon = step.icon;
               const isActive = currentStep === index;
@@ -377,6 +458,102 @@ const ModernUserProfileForm = () => {
                   className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all outline-none bg-white/50 min-h-[120px]"
                   placeholder="JavaScript, React, Node.js, Python..."
                 />
+              </div>
+            </div>
+          )}
+          
+          {/* Resume Upload Step */}
+          {currentStep === 5 && (
+            <div className="space-y-6 animate-fadeIn">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-500 flex items-center justify-center">
+                  <FileText className="w-6 h-6 text-white" />
+                </div>
+                Resume Upload
+              </h2>
+              
+              <div className="bg-white/70 rounded-xl border-2 border-dashed border-teal-400 p-8 text-center">
+                {formData.resume ? (
+                  <div className="flex flex-col items-center">
+                    <div className="w-20 h-20 bg-teal-100 rounded-full flex items-center justify-center mb-4">
+                      <File className="w-10 h-10 text-teal-600" />
+                    </div>
+                    
+                    <h3 className="text-lg font-semibold text-gray-800">
+                      {formData.resume.originalName}
+                    </h3>
+                    
+                    <div className="flex mt-4 gap-3">
+                      <a 
+                        href={formData.resume.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="px-4 py-2 bg-teal-100 text-teal-700 rounded-lg flex items-center gap-2 hover:bg-teal-200 transition-colors"
+                      >
+                        <FileText className="w-4 h-4" /> View Resume
+                      </a>
+                      
+                      <button 
+                        onClick={handleFileClick}
+                        className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg flex items-center gap-2 hover:bg-gray-200 transition-colors"
+                      >
+                        <Upload className="w-4 h-4" /> Replace
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div 
+                    onClick={handleFileClick}
+                    className="cursor-pointer flex flex-col items-center"
+                  >
+                    <div className="w-20 h-20 bg-teal-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-teal-200 transition-colors">
+                      <Upload className="w-10 h-10 text-teal-600" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-800 mb-2">Upload Your Resume</h3>
+                    <p className="text-gray-500 mb-4">PDF format only, max 5MB</p>
+                    
+                    <button
+                      className="px-6 py-3 bg-gradient-to-r from-teal-500 to-emerald-500 text-white rounded-xl shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all font-medium"
+                    >
+                      Choose File
+                    </button>
+                  </div>
+                )}
+                
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  accept="application/pdf"
+                  className="hidden"
+                />
+                
+                {/* Upload Status Messages */}
+                {resumeUploadStatus.loading && (
+                  <div className="mt-4 bg-blue-50 text-blue-700 px-4 py-3 rounded-lg flex items-center gap-2">
+                    <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                    <span>Uploading resume...</span>
+                  </div>
+                )}
+                
+                {resumeUploadStatus.error && (
+                  <div className="mt-4 bg-red-50 text-red-700 px-4 py-3 rounded-lg flex items-center gap-2">
+                    <AlertTriangle className="w-5 h-5" />
+                    <span>{resumeUploadStatus.error}</span>
+                  </div>
+                )}
+                
+                {resumeUploadStatus.success && (
+                  <div className="mt-4 bg-green-50 text-green-700 px-4 py-3 rounded-lg flex items-center gap-2">
+                    <Check className="w-5 h-5" />
+                    <span>Resume uploaded successfully!</span>
+                  </div>
+                )}
+                
+                <p className="text-xs text-gray-500 mt-8">
+                  Your resume will be shared with employers when you apply for jobs.
+                  Only PDF files are allowed to ensure compatibility with all systems.
+                </p>
               </div>
             </div>
           )}

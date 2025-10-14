@@ -4,11 +4,12 @@ import { Outlet, useNavigate } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
 
 const PrivateRoute = () => {
-  const { isAuthenticated, isAuthLoading } = useContext(AppContext);
+  const { isAuthenticated, isAuthLoading, setLoginOpen } = useContext(AppContext);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!isAuthLoading && isAuthenticated === false) {
+      setLoginOpen(true);
       navigate("/");
     }
   }, [isAuthenticated, isAuthLoading, navigate]);

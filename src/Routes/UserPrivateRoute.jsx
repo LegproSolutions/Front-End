@@ -4,7 +4,7 @@ import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
 
 const UserPrivateRoute = () => {
-  const { isUserAuthenticated, isUserAuthLoading, isLoggingOut } =
+  const { isUserAuthenticated, isUserAuthLoading, isLoggingOut, setLoginOpen } =
     useContext(AppContext);
   const navigate = useNavigate();
   const location = useLocation();
@@ -15,6 +15,7 @@ const UserPrivateRoute = () => {
       if (isLoggingOut) {
         navigate("/", { replace: true });
       } else {
+        setLoginOpen(true);
         navigate("/", {
           replace: true,
           state: { from: location.pathname },

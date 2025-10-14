@@ -12,6 +12,7 @@ export const AppContextProvider = (props) => {
     title: "",
     location: "",
   });
+  const [loginOpen, setLoginOpen] = useState(false);
   const [isSearched, setIsSearched] = useState(false);
   const [jobs, setJobs] = useState([]);
   const [homeJobs, sethomeJobs] = useState([]);
@@ -662,6 +663,8 @@ export const AppContextProvider = (props) => {
     setJobType,
     jobsPagination,
     fetchHomeJobs,
+    loginOpen,
+    setLoginOpen,
   };
 
   return (

@@ -18,7 +18,6 @@ import { Sheet, SheetContent, SheetTrigger } from "../components/ui/sheet";
 import { cn } from "../lib/utils";
 
 const Navbar = () => {
-  const [loginOpen, setLoginOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const {
@@ -26,6 +25,8 @@ const Navbar = () => {
     isUserAuthenticated,
     userlogout,
     isLoggingOut,
+    loginOpen,
+    setLoginOpen,
   } = useContext(AppContext);
   const location = useLocation();
 

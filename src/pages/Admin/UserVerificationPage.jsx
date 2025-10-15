@@ -80,7 +80,7 @@ const UserVerificationPage = ({
                       />
                     ) : (
                       <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
-                        <span className="text-lg font-bold text-blue-600">
+                        <span className="text-lg font-bold text-legpro-primary">
                           {getInitial(user.name)}
                         </span>
                       </div>
@@ -90,7 +90,7 @@ const UserVerificationPage = ({
                   <td className="py-3 px-6 text-left">{user.email}</td>
                   <td className="py-3 px-6 text-center">
                     <Link to={`/admin/user-profile/${user._id}`}>
-                      <button className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md text-sm font-semibold transition">
+                      <button className="bg-legpro-primary hover:bg-blue-700 text-white py-2 px-4 rounded-md text-sm font-semibold transition">
                         View Profile
                       </button>
                     </Link>
@@ -142,7 +142,7 @@ const UserVerificationPage = ({
                 onClick={() => changePage(pageNum)}
                 className={`px-3 py-1 rounded-md ${
                   currentPage === pageNum
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-legpro-primary text-white'
                     : 'bg-gray-200 text-gray-800'
                 }`}
               >

@@ -235,7 +235,7 @@ const AddJob = () => {
       <div className="max-w-4xl mx-auto">
         <div className="bg-white shadow-xl rounded-lg overflow-hidden">
           {/* Header */}
-          <div className="bg-gradient-to-r from-blue-600 to-blue-800 px-6 py-4">
+          <div className="bg-legpro-primary px-6 py-4">
             <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center">
               <Briefcase className="mr-2 h-5 w-5" />
               Post a New Job Opportunity
@@ -385,7 +385,7 @@ const AddJob = () => {
                         <button
                           type="button"
                           onClick={addCustomCategory}
-                          className="p-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md shadow"
+                          className="p-2 bg-blue-500 hover:bg-legpro-primary text-white rounded-md shadow"
                           title="Add Category"
                         >
                           <Plus className="w-5 h-5" />
@@ -587,7 +587,7 @@ const AddJob = () => {
                             />
                             <button
                               onClick={handleConfirmCity}
-                              className="flex items-center justify-center bg-blue-600 text-white rounded-md p-2 hover:bg-blue-700 transition-all duration-200"
+                              className="flex items-center justify-center bg-legpro-primary text-white rounded-md p-2 hover:bg-blue-700 transition-all duration-200"
                               title="Add city"
                             >
                               <span className="text-xl font-bold">+</span>
@@ -705,7 +705,7 @@ const AddJob = () => {
                   <button
                     type="button"
                     onClick={() => setActiveSection("company")}
-                    className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                    className="px-6 py-2 bg-legpro-primary text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
                   >
                     Next: Company Info
                   </button>
@@ -800,7 +800,7 @@ const AddJob = () => {
                   <button
                     type="button"
                     onClick={() => setActiveSection("contact")}
-                    className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                    className="px-6 py-2 bg-legpro-primary text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
                   >
                     Next: Contact Info
                   </button>

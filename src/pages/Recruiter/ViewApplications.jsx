@@ -316,7 +316,7 @@ const ViewApplications = () => {
         >
           <div className="flex items-center gap-3">
             <div className="bg-blue-100 p-2 rounded-full">
-              <Briefcase className="h-5 w-5 text-blue-600" />
+              <Briefcase className="h-5 w-5 text-legpro-primary" />
             </div>
             <div>
               <h3 className="font-medium text-gray-800">{job.title}</h3>
@@ -605,7 +605,7 @@ const ViewApplications = () => {
                     onClick={() => setActiveTab("personal")}
                     className={`px-4 py-2 font-medium text-sm ${
                       activeTab === "personal"
-                        ? "border-b-2 border-blue-500 text-blue-600"
+                        ? "border-b-2 border-blue-500 text-legpro-primary"
                         : "text-gray-500 hover:text-gray-700"
                     }`}
                   >
@@ -615,7 +615,7 @@ const ViewApplications = () => {
                     onClick={() => setActiveTab("education")}
                     className={`px-4 py-2 font-medium text-sm ${
                       activeTab === "education"
-                        ? "border-b-2 border-blue-500 text-blue-600"
+                        ? "border-b-2 border-blue-500 text-legpro-primary"
                         : "text-gray-500 hover:text-gray-700"
                     }`}
                   >
@@ -625,7 +625,7 @@ const ViewApplications = () => {
                     onClick={() => setActiveTab("experience")}
                     className={`px-4 py-2 font-medium text-sm ${
                       activeTab === "experience"
-                        ? "border-b-2 border-blue-500 text-blue-600"
+                        ? "border-b-2 border-blue-500 text-legpro-primary"
                         : "text-gray-500 hover:text-gray-700"
                     }`}
                   >
@@ -635,7 +635,7 @@ const ViewApplications = () => {
                     onClick={() => setActiveTab("address")}
                     className={`px-4 py-2 font-medium text-sm ${
                       activeTab === "address"
-                        ? "border-b-2 border-blue-500 text-blue-600"
+                        ? "border-b-2 border-blue-500 text-legpro-primary"
                         : "text-gray-500 hover:text-gray-700"
                     }`}
                   >

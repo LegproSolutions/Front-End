@@ -49,7 +49,8 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
         // Custom Legpro brand colors
-        'legpro-primary': '#2563eb',
+        'legpro-primary': '#0F3B7A',
+        'legpro-primary-hover': '#004d66',
         'legpro-secondary': '#64748b',
         'legpro-accent': '#10b981',
         'legpro-success': '#059669',

@@ -117,15 +117,15 @@ const JobDetails = () => {
           {/* Header Section */}
           <Card className="overflow-hidden border-none shadow-lg mb-8">
             {/* Top color bar */}
-            <div className="h-2 bg-gradient-to-r from-[#0F3B7A] to-[#1D5AB9]"></div>
+            <div className="h-2 bg-legpro-primary"></div>
             
             <CardContent className="p-0">
               {/* Header content */}
-              <div className="bg-gradient-to-r from-[#0F3B7A] to-[#1D5AB9] p-8 text-white">
+              <div className="bg-legpro-primary p-8 text-white">
                 <div className="flex flex-col md:flex-row items-start gap-6">
                   <div className="bg-white p-4 rounded-xl shadow-lg flex-shrink-0 w-24 h-24 flex items-center justify-center">
                     <img
-                      src={job.companyId.email === "info@justjobs.com" ? job.logo : job.companyId.image}
+                      src={job.companyId.image}
                       alt={job.companyDetails.name}
                       onError={(e) => {
                         e.target.src = "https://cdn.iconscout.com/icon/premium/png-256-thumb/building-icon-svg-download-png-1208046.png?f=webp&w=128";
@@ -243,7 +243,7 @@ const JobDetails = () => {
                   <div className="flex items-center gap-4 mb-6">
                     <div className="w-16 h-16 bg-gray-50 rounded-lg p-2 flex items-center justify-center">
                       <img
-                        src={job.companyId.email === "info@justjobs.com" ? job.logo : job.companyId.image}
+                        src={job.companyId.image}
                         alt={job.companyDetails.name}
                         onError={(e) => {
                           e.target.src = "https://cdn.iconscout.com/icon/premium/png-256-thumb/building-icon-svg-download-png-1208046.png?f=webp&w=128";
@@ -269,11 +269,11 @@ const JobDetails = () => {
             <div className="space-y-6">
               {/* Apply Button Card */}
               <Card className="border-none shadow-lg overflow-hidden sticky top-4">
-                <div className="h-2 bg-gradient-to-r from-[#0F3B7A] to-[#1D5AB9]"></div>
+                <div className="h-2 bg-legpro-primary"></div>
                 <CardContent className="p-6">
                   <button
                     onClick={handleApplyClick}
-                    className="w-full bg-gradient-to-r from-[#0F3B7A] to-[#1D5AB9] text-white px-6 py-4 rounded-md font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center gap-2 text-lg"
+                    className="w-full bg-legpro-primary text-white px-6 py-4 rounded-md font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center gap-2 text-lg"
                   >
                     {isUserAuthenticated ? (
                       <>
@@ -302,7 +302,7 @@ const JobDetails = () => {
 
               {/* Job Overview Card */}
               <Card className="border-none shadow-lg overflow-hidden">
-                <div className="h-2 bg-gradient-to-r from-[#0F3B7A] to-[#1D5AB9]"></div>
+                <div className="h-2 bg-legpro-primary"></div>
                 <CardContent className="p-6">
                   <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
                     <Briefcase className="w-5 h-5 text-[#0F3B7A]" />
@@ -323,7 +323,7 @@ const JobDetails = () => {
 
               {/* Share Job Card */}
               <Card className="border-none shadow-lg overflow-hidden">
-                <div className="h-2 bg-gradient-to-r from-[#0F3B7A] to-[#1D5AB9]"></div>
+                <div className="h-2 bg-legpro-primary"></div>
                 <CardContent className="p-6">
                   <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
                     <Share2 className="w-5 h-5 text-[#0F3B7A]" />
@@ -353,7 +353,7 @@ const JobDetails = () => {
               </Card>
               
               {/* Similar Jobs Teaser */}
-              <Card className="border-none shadow-lg overflow-hidden bg-gradient-to-br from-[#EBF2FF] to-[#F5F9FF]">
+              <Card className="border-none shadow-lg overflow-hidden bg-blue-50">
                 <CardContent className="p-6">
                   <h3 className="text-lg font-bold text-[#0F3B7A] mb-3">Looking for similar jobs?</h3>
                   <p className="text-gray-700 mb-4">

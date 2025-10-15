@@ -47,7 +47,7 @@ const NotFound = () => {
         <div className="flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-3">
           <button
             onClick={() => navigate("/")}
-            className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded transition-colors duration-200"
+            className="px-6 py-2 bg-blue-500 hover:bg-legpro-primary text-white font-medium rounded transition-colors duration-200"
           >
             Go Home
           </button>

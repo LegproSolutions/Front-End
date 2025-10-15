@@ -115,7 +115,7 @@ const ManageJobs = () => {
                 <h3 className="text-sm sm:text-lg font-semibold text-gray-700">
                   Total Job Openings
                 </h3>
-                <p className="text-2xl sm:text-3xl font-bold text-blue-600">
+                <p className="text-2xl sm:text-3xl font-bold text-legpro-primary">
                   {totalJobs}
                 </p>
               </div>
@@ -249,7 +249,7 @@ const ManageJobs = () => {
                     <td className="px-3 sm:px-5 py-3 text-gray-600 text-xs sm:text-sm">
                       {new Date(job.date).toLocaleDateString()}
                     </td>
-                    <td className="px-3 sm:px-5 py-3 text-center font-semibold text-blue-600 text-xs sm:text-sm">
+                    <td className="px-3 sm:px-5 py-3 text-center font-semibold text-legpro-primary text-xs sm:text-sm">
                       {job.applicants || 0}
                     </td>
                     <td className="px-3 sm:px-5 py-3 text-center">
@@ -319,7 +319,7 @@ const ManageJobs = () => {
                         className={`px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm font-medium text-white rounded-md flex items-center gap-1 ${
                           // Edit button is enabled if verified OR if there's an objection and it hasn't been edited yet
                           (!editButtonDisabled || (hasObjection && !isEditedAfterObjection))
-                            ? "bg-blue-600 hover:bg-blue-700"
+                            ? "bg-legpro-primary hover:bg-blue-700"
                             : "bg-gray-400 cursor-not-allowed pointer-events-none"
                         }`}
                       >
@@ -350,7 +350,7 @@ const ManageJobs = () => {
             <div className="flex justify-end mt-6">
               <button
                 onClick={() => setShowFullObjectionModal(false)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+                className="px-4 py-2 bg-legpro-primary text-white rounded-md hover:bg-blue-700 transition"
               >
                 Close
               </button>

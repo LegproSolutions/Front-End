@@ -30,7 +30,7 @@ const DetailsNavbarPage = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 w-full z-50 bg-gradient-to-r from-blue-900 to-gray-900 text-white shadow-md p-4 flex items-center justify-between">
+    <nav className="fixed top-0 left-0 w-full z-50 bg-legpro-primary text-white shadow-md p-4 flex items-center justify-between">
      
       
 

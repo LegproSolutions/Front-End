@@ -99,7 +99,7 @@ const AdminLogin = ({ isOpen, onClose }) => {
       <DialogContent className="max-w-4xl p-0 gap-0 border-0">
         <div className="flex min-h-[600px]">
           {/* Left side - Features */}
-          <div className="relative hidden md:flex w-1/2 bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 p-8 text-white overflow-hidden">
+          <div className="relative hidden md:flex w-1/2 bg-legpro-primary p-8 text-white overflow-hidden">
             {/* Background pattern */}
             <div className="absolute inset-0 opacity-20">
               <div className="absolute w-32 h-32 bg-white/10 rounded-full top-10 left-10"></div>

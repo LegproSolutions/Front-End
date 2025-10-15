@@ -49,7 +49,7 @@ const Hero = () => {
 
   // Sample statistics (you can replace with real data)
   const stats = [
-    { icon: Briefcase, label: "Active Jobs", value: homeJobs.length || "1000+", color: "text-blue-600" },
+    { icon: Briefcase, label: "Active Jobs", value: homeJobs.length || "1000+", color: "text-legpro-primary" },
     { icon: Users, label: "Job Seekers", value: "50K+", color: "text-green-600" },
     { icon: Building, label: "Companies", value: "500+", color: "text-purple-600" },
     { icon: CheckCircle, label: "Success Rate", value: "95%", color: "text-orange-600" },
@@ -63,7 +63,7 @@ const Hero = () => {
   ];
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
+    <div className="relative min-h-screen bg-gray-50">
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] -z-10" />
       
@@ -78,7 +78,7 @@ const Hero = () => {
               </Badge>
               <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 leading-tight">
                 Find Your
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-legpro-primary to-legpro-accent">
+                <span className="text-legpro-primary">
                   {" "}Dream Job
                 </span>
                 <br />
@@ -141,7 +141,7 @@ const Hero = () => {
                 
                 <Button 
                   onClick={handleSearch}
-                  className="w-full h-12 text-base font-semibold bg-gradient-to-r from-legpro-primary to-legpro-accent hover:from-legpro-primary/90 hover:to-legpro-accent/90"
+                  className="w-full h-12 text-base font-semibold bg-legpro-primary hover:bg-legpro-primary-hover text-white"
                 >
                   <Search className="mr-2 h-5 w-5" />
                   Search Jobs
@@ -176,7 +176,7 @@ const Hero = () => {
           {/* Right Content - Visual Elements */}
           <div className="relative">
             {/* Main Illustration */}
-            <div className="relative bg-gradient-to-br from-legpro-primary/10 to-legpro-accent/10 rounded-3xl p-8">
+            <div className="relative bg-legpro-primary/10 rounded-3xl p-8">
               <img 
                 src={assets.app_main_img} 
                 alt="Job Search Illustration" 
@@ -199,7 +199,7 @@ const Hero = () => {
               <div className="absolute -bottom-4 -right-4 bg-white rounded-xl p-3 shadow-lg">
                 <div className="flex items-center space-x-2">
                   <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                    <TrendingUp className="w-4 h-4 text-blue-600" />
+                    <TrendingUp className="w-4 h-4 text-legpro-primary" />
                   </div>
                   <div>
                     <p className="font-semibold text-sm">Career Growth</p>

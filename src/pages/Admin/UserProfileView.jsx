@@ -118,7 +118,7 @@ const UserProfileView = ({ profile }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {Object.entries(education).map(([key, edu]) => (
                 <div key={key} className="border p-4 rounded-lg bg-white shadow-sm">
-                  <h3 className="text-blue-600 font-semibold">{edu.instituteType}</h3>
+                  <h3 className="text-legpro-primary font-semibold">{edu.instituteType}</h3>
                   <p><strong>Institute:</strong> {edu.instituteFields.instituteName}</p>
                   <p><strong>Board:</strong> {edu.instituteFields.certificationBody}</p>
                   <p><strong>Year:</strong> {edu.instituteFields.passingYear}</p>
@@ -161,7 +161,7 @@ const UserProfileView = ({ profile }) => {
               href={resume}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700 transition"
+              className="inline-block bg-legpro-primary text-white px-5 py-2 rounded hover:bg-blue-700 transition"
             >
               📄 View Resume
             </a>
@@ -171,7 +171,7 @@ const UserProfileView = ({ profile }) => {
         <div className="text-center">
           <button
             onClick={handleViewAppliedJobs}
-            className="inline-block bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700 transition shadow-md font-semibold"
+            className="inline-block bg-legpro-primary text-white px-5 py-2 rounded hover:bg-blue-700 transition shadow-md font-semibold"
           >
             Applied Jobs
           </button>
@@ -297,7 +297,7 @@ export default UserProfileView;
 //             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 //               {Object.entries(education).map(([key, edu]) => (
 //                 <div key={key} className="border p-4 rounded-lg bg-white shadow-sm">
-//                   <h3 className="text-blue-600 font-semibold">{edu.instituteType}</h3>
+//                   <h3 className="text-legpro-primary font-semibold">{edu.instituteType}</h3>
 //                   <p><strong>Institute:</strong> {edu.instituteFields.instituteName}</p>
 //                   <p><strong>Board:</strong> {edu.instituteFields.certificationBody}</p>
 //                   <p><strong>Year:</strong> {edu.instituteFields.passingYear}</p>
@@ -340,7 +340,7 @@ export default UserProfileView;
 //               href={resume}
 //               target="_blank"
 //               rel="noopener noreferrer"
-//               className="inline-block bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700 transition"
+//               className="inline-block bg-legpro-primary text-white px-5 py-2 rounded hover:bg-blue-700 transition"
 //             >
 //               📄 View Resume
 //             </a>

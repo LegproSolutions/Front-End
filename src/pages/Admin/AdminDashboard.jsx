@@ -258,7 +258,7 @@ const AdminDashboard = () => {
                                 </button>
                                 <button
                                   onClick={() => handleViewRecruiterDetails(recruiter._id)}
-                                  className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md text-xs font-semibold transition"
+                                  className="bg-legpro-primary hover:bg-blue-700 text-white py-2 px-4 rounded-md text-xs font-semibold transition"
                                 >
                                   Details
                                 </button>
@@ -313,7 +313,7 @@ const AdminDashboard = () => {
                     key={pageNum}
                     onClick={() => changePageForRecruiterTable(pageNum)}
                     className={`px-3 py-1 rounded-md ${currentPage === pageNum
-                      ? 'bg-blue-600 text-white'
+                      ? 'bg-legpro-primary text-white'
                       : 'bg-gray-200 text-gray-800'
                       }`}
                   >

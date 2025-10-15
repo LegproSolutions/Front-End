@@ -50,7 +50,7 @@ const Unauthorized = () => {
           </div>
           <button
             onClick={() => navigate("/")}
-            className="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded transition-colors duration-200"
+            className="mt-4 w-full bg-blue-500 hover:bg-legpro-primary text-white font-medium py-2 px-4 rounded transition-colors duration-200"
           >
             Go to Homepage Now
           </button>

@@ -10,7 +10,7 @@ const PrivacyInfo = () => {
       <Navbar />
       <div className="min-h-screen bg-gray-50">
         {/* Hero Section */}
-        <div className="bg-gradient-to-b from-[#0F3B7A] to-[#1D5AB9] text-white py-16">
+        <div className="bg-legpro-primary text-white py-16">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <div className="inline-flex items-center justify-center w-14 h-14 bg-white bg-opacity-20 backdrop-blur-sm rounded-full mb-4">
@@ -45,7 +45,7 @@ const PrivacyInfo = () => {
           <div className="space-y-8">
             {/* Information Collection Section */}
             <Card className="overflow-hidden border-none shadow-lg">
-              <div className="h-2 bg-gradient-to-r from-[#0F3B7A] to-[#1D5AB9]"></div>
+              <div className="h-2 bg-legpro-primary"></div>
               <CardContent className="p-6 sm:p-8">
                 <div className="flex flex-col sm:flex-row gap-6">
                   <div className="flex-shrink-0">
@@ -95,7 +95,7 @@ const PrivacyInfo = () => {
 
             {/* Information Usage Section */}
             <Card className="overflow-hidden border-none shadow-lg">
-              <div className="h-2 bg-gradient-to-r from-[#0F3B7A] to-[#1D5AB9]"></div>
+              <div className="h-2 bg-legpro-primary"></div>
               <CardContent className="p-6 sm:p-8">
                 <div className="flex flex-col sm:flex-row gap-6">
                   <div className="flex-shrink-0">
@@ -147,7 +147,7 @@ const PrivacyInfo = () => {
 
             {/* Data Protection Section */}
             <Card className="overflow-hidden border-none shadow-lg">
-              <div className="h-2 bg-gradient-to-r from-[#0F3B7A] to-[#1D5AB9]"></div>
+              <div className="h-2 bg-legpro-primary"></div>
               <CardContent className="p-6 sm:p-8">
                 <div className="flex flex-col sm:flex-row gap-6">
                   <div className="flex-shrink-0">
@@ -165,7 +165,7 @@ const PrivacyInfo = () => {
                       personal information against unauthorized access, alteration, disclosure, or destruction.
                     </p>
                     
-                    <div className="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-5">
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-5">
                       <div className="flex items-center mb-3">
                         <Eye className="w-5 h-5 text-[#0F3B7A] mr-2" />
                         <h3 className="font-semibold text-lg text-[#0F3B7A]">Our Security Commitment</h3>
@@ -182,7 +182,7 @@ const PrivacyInfo = () => {
 
             {/* Policy Changes Section */}
             <Card className="overflow-hidden border-none shadow-lg">
-              <div className="h-2 bg-gradient-to-r from-[#0F3B7A] to-[#1D5AB9]"></div>
+              <div className="h-2 bg-legpro-primary"></div>
               <CardContent className="p-6 sm:p-8">
                 <div className="flex flex-col sm:flex-row gap-6">
                   <div className="flex-shrink-0">
@@ -206,7 +206,7 @@ const PrivacyInfo = () => {
 
             {/* Contact Section */}
             <Card className="overflow-hidden border-none shadow-lg">
-              <div className="h-2 bg-gradient-to-r from-[#0F3B7A] to-[#1D5AB9]"></div>
+              <div className="h-2 bg-legpro-primary"></div>
               <CardContent className="p-6 sm:p-8">
                 <div className="flex flex-col sm:flex-row gap-6">
                   <div className="flex-shrink-0">
@@ -224,7 +224,7 @@ const PrivacyInfo = () => {
                     </p>
                     <a 
                       href="mailto:support@jobmela.com" 
-                      className="inline-flex items-center px-6 py-3 bg-[#0F3B7A] hover:bg-[#1D5AB9] text-white font-medium rounded-md transition-colors"
+                      className="inline-flex items-center px-6 py-3 bg-legpro-primary hover:bg-legpro-primary-hover text-white font-medium rounded-md transition-colors"
                     >
                       <Mail className="w-5 h-5 mr-2" />
                       Email Our Privacy Team

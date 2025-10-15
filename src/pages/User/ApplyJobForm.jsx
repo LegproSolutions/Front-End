@@ -315,7 +315,7 @@ const onCancel=()=>{
             <ChevronLeft size={20} />
             <span>Back to Job Details</span>
           </button>
-          <h2 className="text-2xl font-bold text-center text-blue-600">
+          <h2 className="text-2xl font-bold text-center text-legpro-primary">
             Apply for {jobTitle}
           </h2>
         </div>
@@ -744,7 +744,7 @@ const onCancel=()=>{
             <button
               type="button"
               onClick={handleAddWorkExperience}
-              className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+              className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-legpro-primary"
             >
               Add Experience
             </button>
@@ -914,7 +914,7 @@ const onCancel=()=>{
                   languages: [...prev.languages, { name: "", proficiency: "" }],
                 }))
               }
-              className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+              className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-legpro-primary"
             >
               Add Language
             </button>
@@ -924,7 +924,7 @@ const onCancel=()=>{
           <div className="flex justify-end">
             <button
               type="submit"
-              className="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 focus:outline-none font-medium"
+              className="bg-legpro-primary text-white px-6 py-3 rounded-md hover:bg-blue-700 focus:outline-none font-medium"
             >
               Submit Application
             </button>

@@ -15,7 +15,7 @@ const Footer = () => {
             onClick={() => setShowAdminLogin(true)}
             className="mx-auto lg:mx-0 cursor-pointer"
           >
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <h2 className="text-2xl font-bold text-legpro-primary">
               Job Mela
             </h2>
           </div>

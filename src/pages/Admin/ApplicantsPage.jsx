@@ -128,7 +128,7 @@ const ApplicantsPage = () => {
                           href={applicant.userId.resume}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-blue-600 hover:text-blue-900"
+                          className="text-legpro-primary hover:text-blue-900"
                         >
                           View Resume
                         </a>

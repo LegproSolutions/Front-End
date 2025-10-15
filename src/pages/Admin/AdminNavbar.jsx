@@ -49,7 +49,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 w-full z-50 bg-gradient-to-r from-blue-900 to-gray-900 text-white shadow-md p-4 flex items-center justify-between">
+    <nav className="fixed top-0 left-0 w-full z-50 bg-legpro-primary text-white shadow-md p-4 flex items-center justify-between">
       {/* Mobile Menu Icon */}
       <button
         className="md:hidden block absolute left-4 p-2 rounded-md bg-gray-800 text-white hover:bg-gray-700 active:scale-95 transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500"

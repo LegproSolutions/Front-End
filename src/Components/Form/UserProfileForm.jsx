@@ -147,7 +147,7 @@ const ModernUserProfileForm = () => {
                 </div>
               </div>
               <div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-legpro-primary via-purple-600 to-pink-600 bg-clip-text text-transparent">
                   Build Your Profile
                 </h1>
                 <p className="text-gray-600 mt-2">Complete your journey to success</p>
@@ -176,7 +176,7 @@ const ModernUserProfileForm = () => {
                 </defs>
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                <span className="text-3xl font-bold bg-gradient-to-r from-legpro-primary to-purple-600 bg-clip-text text-transparent">
                   {profileCompletion}%
                 </span>
                 <span className="text-xs text-gray-500">Complete</span>
@@ -349,7 +349,7 @@ const ModernUserProfileForm = () => {
                           onChange={handleChange}
                           className="w-5 h-5 text-blue-500 focus:ring-blue-500"
                         />
-                        <span className="text-gray-700 group-hover/radio:text-blue-600 transition-colors">{gender}</span>
+                        <span className="text-gray-700 group-hover/radio:text-legpro-primary transition-colors">{gender}</span>
                       </label>
                     ))}
                   </div>
@@ -531,7 +531,7 @@ const ModernUserProfileForm = () => {
                 {/* Upload Status Messages */}
                 {resumeUploadStatus.loading && (
                   <div className="mt-4 bg-blue-50 text-blue-700 px-4 py-3 rounded-lg flex items-center gap-2">
-                    <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                    <div className="w-5 h-5 border-2 border-legpro-primary border-t-transparent rounded-full animate-spin"></div>
                     <span>Uploading resume...</span>
                   </div>
                 )}
@@ -575,7 +575,7 @@ const ModernUserProfileForm = () => {
             {currentStep < steps.length - 1 ? (
               <button
                 onClick={() => setCurrentStep(Math.min(steps.length - 1, currentStep + 1))}
-                className="px-8 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all"
+                className="px-8 py-3 rounded-xl bg-gradient-to-r from-legpro-primary to-purple-600 text-white font-semibold hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all"
               >
                 Next Step
               </button>

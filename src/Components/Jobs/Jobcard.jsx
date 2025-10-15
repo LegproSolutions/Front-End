@@ -68,9 +68,6 @@ const JobCard = ({ job, viewMode = "grid" }) => {
 
   // Get company logo
   const getCompanyLogo = () => {
-    if (job.companyId?.email === "info@justjobs.com") {
-      return job.logo;
-    }
     return job.companyId?.image;
   };
 

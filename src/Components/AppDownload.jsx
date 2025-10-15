@@ -4,7 +4,7 @@ import { assets } from '../assets/assets'
 const AppDownload = () => {
   return (
     <div className='container px-4 2xl:px-20 mx-auto my-20'>
-      <div className='relative bg-gradient-to-r from-blue-50 to-indigo-100 p-12 sm:p-24 lg:p-32 rounded-lg shadow-lg'>
+      <div className='relative bg-legpro-primary/10 p-12 sm:p-24 lg:p-32 rounded-lg shadow-lg'>
         <div className='text-2xl sm:text-4xl font-bold mb-8 max-w-md'>
           <h1>Download Our Mobile App</h1>
           <div className='flex gap-4 mt-4'>

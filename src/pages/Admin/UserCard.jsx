@@ -27,7 +27,7 @@ const UserCard = ({ user }) => {
           />
         ) : (
           <div className="w-full h-32 sm:h-36 md:h-28 bg-blue-100 rounded-md flex items-center justify-center mb-3">
-            <span className="text-3xl sm:text-4xl font-bold text-blue-600">
+            <span className="text-3xl sm:text-4xl font-bold text-legpro-primary">
               {getInitial(name)}
             </span>
           </div>
@@ -49,7 +49,7 @@ const UserCard = ({ user }) => {
 
       {/* Button */}
       <button
-        className="bg-blue-600 text-white rounded-md py-2 hover:bg-blue-700 mt-4 text-sm transition"
+        className="bg-legpro-primary text-white rounded-md py-2 hover:bg-blue-700 mt-4 text-sm transition"
         onClick={handleViewProfile}
       >
         View Profile

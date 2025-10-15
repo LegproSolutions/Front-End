@@ -22,7 +22,7 @@ const CookiePolicy = () => {
       <Navbar />
       <div className="min-h-screen bg-[#F8FAFF]">
         {/* Hero Section */}
-        <div className="bg-gradient-to-b from-[#0F3B7A] to-[#1A4DA6] text-white py-14">
+        <div className="bg-legpro-primary text-white py-14">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col items-center justify-between">
               <div className="flex-shrink-0">

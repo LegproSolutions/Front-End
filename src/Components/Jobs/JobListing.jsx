@@ -133,7 +133,7 @@ const JobListing = () => {
             <div className="flex items-center justify-between flex-wrap gap-4">
               <div className="flex items-center gap-3 flex-1">
                 <div className="flex items-center gap-2 text-gray-700">
-                  <SlidersHorizontal size={18} className="text-blue-600" />
+                  <SlidersHorizontal size={18} className="text-legpro-primary" />
                   <h3 className="font-semibold text-sm">Active Filters</h3>
                 </div>
 
@@ -247,7 +247,7 @@ const JobListing = () => {
           >
             <div className="flex items-center justify-between mb-6">
               <h3 className="font-bold text-xl text-gray-900 flex items-center gap-2">
-                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-legpro-primary rounded-lg flex items-center justify-center">
                   <Filter size={16} className="text-white" />
                 </div>
                 Filters
@@ -255,7 +255,7 @@ const JobListing = () => {
               {hasActiveFilters && (
                 <button
                   onClick={clearAllFilters}
-                  className="text-xs text-blue-600 hover:text-blue-700 font-medium transition-colors"
+                  className="text-xs text-legpro-primary hover:text-legpro-primary-hover font-medium transition-colors"
                 >
                   Reset
                 </button>
@@ -265,7 +265,7 @@ const JobListing = () => {
             {/* Category Filter */}
             <div className="mb-6">
               <h4 className="font-semibold text-sm text-gray-900 mb-3 uppercase tracking-wide flex items-center gap-2">
-                <Briefcase size={14} className="text-blue-600" />
+                <Briefcase size={14} className="text-legpro-primary" />
                 Categories
               </h4>
               <div className="space-y-1.5 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
@@ -278,7 +278,7 @@ const JobListing = () => {
                       type="checkbox"
                       checked={selectedCategories.includes(category)}
                       onChange={() => toggleCategory(category)}
-                      className="mr-3 h-4 w-4 accent-blue-600 rounded cursor-pointer"
+                      className="mr-3 h-4 w-4 accent-legpro-primary rounded cursor-pointer"
                     />
                     <span className="text-sm text-gray-700 group-hover:text-gray-900 font-medium">
                       {category}
@@ -291,7 +291,7 @@ const JobListing = () => {
             {/* Salary Filter */}
             <div className="mb-6">
               <h4 className="font-semibold text-sm text-gray-900 mb-3 uppercase tracking-wide flex items-center gap-2">
-                <IndianRupee size={14} className="text-blue-600" />
+                <IndianRupee size={14} className="text-legpro-primary" />
                 Salary Range
               </h4>
               <div className="space-y-1.5">
@@ -306,7 +306,7 @@ const JobListing = () => {
                       value={range}
                       checked={selectedSalary === range}
                       onChange={(e) => setSelectedSalary(e.target.value)}
-                      className="mr-3 h-4 w-4 accent-blue-600 cursor-pointer"
+                      className="mr-3 h-4 w-4 accent-legpro-primary cursor-pointer"
                     />
                     <span className="text-sm text-gray-700 group-hover:text-gray-900 font-medium">
                       {range}
@@ -319,7 +319,7 @@ const JobListing = () => {
             {/* Location Filter */}
             <div>
               <h4 className="font-semibold text-sm text-gray-900 mb-3 uppercase tracking-wide flex items-center gap-2">
-                <MapPin size={14} className="text-blue-600" />
+                <MapPin size={14} className="text-legpro-primary" />
                 Locations
               </h4>
               <div className="space-y-1.5 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
@@ -332,7 +332,7 @@ const JobListing = () => {
                       type="checkbox"
                       checked={selectedLocations.includes(location)}
                       onChange={() => toggleLocation(location)}
-                      className="mr-3 h-4 w-4 accent-blue-600 rounded cursor-pointer"
+                      className="mr-3 h-4 w-4 accent-legpro-primary rounded cursor-pointer"
                     />
                     <span className="text-sm text-gray-700 group-hover:text-gray-900 font-medium">
                       {location}
@@ -355,7 +355,7 @@ const JobListing = () => {
                   {homeJobs.length > 0 ? (
                     <>
                       Showing <span className="font-semibold text-gray-900">{homeJobs.length}</span> of{" "}
-                      <span className="font-semibold text-blue-600">{jobsPagination.totalJobs}</span> jobs
+                      <span className="font-semibold text-legpro-primary">{jobsPagination.totalJobs}</span> jobs
                     </>
                   ) : (
                     <span className="text-gray-500">No results found</span>
@@ -369,7 +369,7 @@ const JobListing = () => {
                   onClick={() => setViewMode('grid')}
                   className={`p-2.5 rounded-md transition-all ${
                     viewMode === 'grid'
-                      ? 'bg-blue-600 text-white shadow-md scale-105'
+                      ? 'bg-legpro-primary text-white shadow-md scale-105'
                       : 'text-gray-600 hover:text-gray-800 hover:bg-gray-200'
                   }`}
                   title="Grid View"
@@ -380,7 +380,7 @@ const JobListing = () => {
                   onClick={() => setViewMode('list')}
                   className={`p-2.5 rounded-md transition-all ${
                     viewMode === 'list'
-                      ? 'bg-blue-600 text-white shadow-md scale-105'
+                      ? 'bg-legpro-primary text-white shadow-md scale-105'
                       : 'text-gray-600 hover:text-gray-800 hover:bg-gray-200'
                   }`}
                   title="List View"
@@ -422,7 +422,7 @@ const JobListing = () => {
                   </p>
                   <button
                     onClick={clearAllFilters}
-                    className="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 font-medium shadow-md hover:shadow-lg transition-all"
+                    className="px-6 py-3 bg-gradient-to-r from-legpro-primary to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 font-medium shadow-md hover:shadow-lg transition-all"
                   >
                     Clear All Filters
                   </button>
@@ -470,7 +470,7 @@ const JobListing = () => {
                             onClick={() => changePage(pageNum)}
                             className={`min-w-[2.5rem] h-10 flex items-center justify-center mx-1 rounded-lg font-medium transition-all ${
                               jobsPagination.currentPage === pageNum
-                                ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md scale-110"
+                                ? "bg-legpro-primary text-white shadow-md scale-110"
                                 : "text-gray-700 hover:bg-gray-100"
                             }`}
                           >

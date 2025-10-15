@@ -150,7 +150,7 @@ const UserProfilePagination = ({
               <div
                 className={`flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all duration-200 ${
                   index === currentStep
-                    ? "bg-blue-600 border-blue-600 text-white"
+                    ? "bg-legpro-primary border-legpro-primary text-white"
                     : index < currentStep
                     ? "bg-green-600 border-green-600 text-white"
                     : "bg-gray-100 border-gray-300 text-gray-400"
@@ -166,7 +166,7 @@ const UserProfilePagination = ({
               </div>
               <div className="ml-3 hidden md:block">
                 <div className={`text-sm font-medium ${
-                  index === currentStep ? "text-blue-600" : index < currentStep ? "text-green-600" : "text-gray-400"
+                  index === currentStep ? "text-legpro-primary" : index < currentStep ? "text-green-600" : "text-gray-400"
                 }`}>
                   {step.title}
                 </div>

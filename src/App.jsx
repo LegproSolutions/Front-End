@@ -34,6 +34,7 @@ import PrivacyInfo from "./Components/privacyInfo.jsx";
 import CookiePolicy from "./Components/cookie.jsx";
 import TermsAndConditions from "./Components/terms.jsx";
 import ContactUs from "./Components/contactus.jsx";
+import UserProfileForm from "./Components/Form/UserProfileForm";
 
 
 // import VerifyJobPosts from "./pages/Admin/PostVerifactionPage.jsx";
@@ -157,6 +158,7 @@ const App = () => {
           <Route path="/cookiepolicy" element={<CookiePolicy />} />
           <Route path="/TermsAndConditions" element={<TermsAndConditions />} />
           <Route path="/contactus" element={<ContactUs />} />
+          
 
           
           {/* Catch-all Not Found Route */}

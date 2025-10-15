@@ -1,232 +1,782 @@
-import React, { useState, useRef } from 'react';
-import { User, Mail, Phone, MapPin, Briefcase, Award, Code, FileText, Camera, Calendar, Users, Upload, File, X, Check, AlertTriangle } from 'lucide-react';
-import axios from '../../utils/axiosConfig';
+import React, { useState, useRef } from "react";
+import {
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  Briefcase,
+  Award,
+  Code,
+  FileText,
+  Camera,
+  Calendar,
+  Users,
+  Upload,
+  File,
+  X,
+  Check,
+  AlertTriangle,
+  GraduationCap,
+  Building2,
+  Globe,
+  Languages,
+  Star,
+  Plus,
+  Trash2,
+  Edit,
+  Save,
+  ChevronDown,
+  Search,
+  Loader,
+} from "lucide-react";
+import axios from "../../utils/axiosConfig";
 
-const ModernUserProfileForm = () => {
+const UserProfileForm = () => {
   const [currentStep, setCurrentStep] = useState(0);
-  const [profileCompletion, setProfileCompletion] = useState(45);
+  const [profileCompletion, setProfileCompletion] = useState(15);
   const fileInputRef = useRef(null);
-  const [resumeUploadStatus, setResumeUploadStatus] = useState({
-    loading: false,
-    error: null,
-    success: false,
+  const profileImageRef = useRef(null);
+
+  const [uploadStatus, setUploadStatus] = useState({
+    resume: { loading: false, error: null, success: false },
+    profileImage: { loading: false, error: null, success: false },
+    submit: { loading: false, error: null, success: false },
   });
-  
+
+  const [isLoadingProfile, setIsLoadingProfile] = useState(true);
+
   const [formData, setFormData] = useState({
-    firstName: "John",
-    lastName: "Doe",
-    fatherName: "",
-    gender: "",
-    dateOfBirth: "",
-    email: "john.doe@example.com",
-    phone: "",
-    aadharNumber: "",
-    address: {
-      street: "",
-      city: "",
-      state: "",
-      country: "",
-      pincode: "",
+    // Basic Information
+    personalInfo: {
+      firstName: "",
+      lastName: "",
+      middleName: "",
+      email: "",
+      phone: "",
+      alternatePhone: "",
+      dateOfBirth: "",
+      gender: "",
+      maritalStatus: "",
+      nationality: "Indian",
+      profileImage: null,
     },
-    skills: ["JavaScript", "React", "Node.js"],
-    resume: null, // To store resume information
+
+    // Address Information
+    address: {
+      current: {
+        street: "",
+        city: "",
+        state: "",
+        country: "India",
+        pincode: "",
+        landmark: "",
+      },
+      permanent: {
+        street: "",
+        city: "",
+        state: "",
+        country: "India",
+        pincode: "",
+        landmark: "",
+        sameAsCurrent: false,
+      },
+    },
+
+    // Professional Information
+    professional: {
+      currentJobTitle: "",
+      currentCompany: "",
+      workExperience: "",
+      currentSalary: "",
+      expectedSalary: "",
+      noticePeriod: "",
+      workMode: "",
+      preferredLocations: [],
+      industryExperience: [],
+      availableFrom: "",
+    },
+
+    // Education
+    education: [],
+
+    // Experience
+    experience: [],
+
+    // Skills & Languages
+    skills: {
+      technical: [],
+      soft: [],
+      languages: [],
+      certifications: [],
+    },
+
+    // Documents
+    documents: {
+      resume: null,
+      profilePicture: null,
+      portfolio: null,
+    },
+
+    // Social & Portfolio Links
+    links: {
+      linkedin: "",
+      github: "",
+      portfolio: "",
+      website: "",
+      other: [],
+    },
+
+    // Preferences
+    preferences: {
+      jobTypes: [],
+      workShifts: [],
+      disabilities: "",
+      careerObjective: "",
+    },
   });
 
   const steps = [
-    { icon: User, label: "Personal Info", color: "from-blue-500 to-cyan-500" },
-    { icon: MapPin, label: "Address", color: "from-purple-500 to-pink-500" },
-    { icon: Award, label: "Education", color: "from-orange-500 to-red-500" },
-    { icon: Briefcase, label: "Experience", color: "from-green-500 to-teal-500" },
-    { icon: Code, label: "Skills", color: "from-indigo-500 to-purple-500" },
-    { icon: FileText, label: "Resume", color: "from-teal-500 to-emerald-500" },
+    {
+      icon: User,
+      label: "Personal",
+      description: "Basic information",
+      fields: ["firstName", "lastName", "email", "phone", "dateOfBirth"],
+    },
+    {
+      icon: MapPin,
+      label: "Address",
+      description: "Location details",
+      fields: ["current.street", "current.city", "current.state"],
+    },
+    {
+      icon: Briefcase,
+      label: "Professional",
+      description: "Career & experience",
+      fields: ["currentJobTitle", "workExperience", "currentSalary"],
+    },
+    {
+      icon: GraduationCap,
+      label: "Education",
+      description: "Academic background",
+      fields: ["education"],
+    },
+    {
+      icon: Award,
+      label: "Experience",
+      description: "Work history",
+      fields: ["experience"],
+    },
+    {
+      icon: Code,
+      label: "Skills",
+      description: "Technical & soft skills",
+      fields: ["technical", "languages"],
+    },
+    {
+      icon: Globe,
+      label: "Portfolio",
+      description: "Links & documents",
+      fields: ["resume", "linkedin", "github"],
+    },
+    {
+      icon: Star,
+      label: "Preferences",
+      description: "Job preferences",
+      fields: ["jobTypes", "workShifts", "careerObjective"],
+    },
   ];
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleAddressChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
+  // Helper function to update nested form data
+  const updateFormData = (section, field, value) => {
+    setFormData((prev) => ({
       ...prev,
-      address: { ...prev.address, [name]: value }
+      [section]: {
+        ...prev[section],
+        [field]: value,
+      },
     }));
   };
-  
-  const handleFileClick = () => {
-    fileInputRef.current.click();
+
+  // Helper function to update deeply nested data
+  const updateNestedData = (section, subsection, field, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      [section]: {
+        ...prev[section],
+        [subsection]: {
+          ...prev[section][subsection],
+          [field]: value,
+        },
+      },
+    }));
   };
 
-  const handleFileChange = async (e) => {
-    const file = e.target.files[0];
-    
-    // Check if file is selected
+  // Add item to arrays (for experience, education, etc.)
+  const addArrayItem = (section, newItem) => {
+    setFormData((prev) => ({
+      ...prev,
+      [section]: [...prev[section], newItem],
+    }));
+  };
+
+  // Remove item from arrays
+  const removeArrayItem = (section, index) => {
+    setFormData((prev) => ({
+      ...prev,
+      [section]: prev[section].filter((_, i) => i !== index),
+    }));
+  };
+
+  // Calculate profile completion
+  const calculateCompletion = () => {
+    let totalFields = 0;
+    let completedFields = 0;
+
+    // Count required fields completion
+    const requiredFields = [
+      formData.personalInfo.firstName,
+      formData.personalInfo.lastName,
+      formData.personalInfo.email,
+      formData.personalInfo.phone,
+      formData.address.current.city,
+      formData.professional.workExperience,
+    ];
+
+    totalFields += requiredFields.length;
+    completedFields += requiredFields.filter(
+      (field) => field && field.trim()
+    ).length;
+
+    // Add bonus for additional sections
+    if (formData.education.length > 0) completedFields += 2;
+    if (formData.experience.length > 0) completedFields += 2;
+    if (formData.skills.technical.length > 0) completedFields += 1;
+    if (formData.documents.resume) completedFields += 2;
+
+    totalFields += 7; // Bonus fields
+
+    return Math.min(Math.round((completedFields / totalFields) * 100), 100);
+  };
+
+  // File upload handlers
+  const handleFileUpload = async (file, type = "resume") => {
     if (!file) return;
-    
-    // Validate file is PDF
-    if (file.type !== 'application/pdf') {
-      setResumeUploadStatus({
-        loading: false,
-        error: 'Only PDF files are allowed',
-        success: false
-      });
-      return;
-    }
-    
-    // Check file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      setResumeUploadStatus({
-        loading: false,
-        error: 'File size should be less than 5MB',
-        success: false
-      });
+
+    const allowedTypes =
+      type === "resume"
+        ? ["application/pdf"]
+        : ["image/jpeg", "image/jpg", "image/png"];
+
+    if (!allowedTypes.includes(file.type)) {
+      setUploadStatus((prev) => ({
+        ...prev,
+        [type]: {
+          loading: false,
+          error: `Only ${
+            type === "resume" ? "PDF" : "image"
+          } files are allowed`,
+          success: false,
+        },
+      }));
       return;
     }
 
-    setResumeUploadStatus({
-      loading: true,
-      error: null,
-      success: false
-    });
+    if (file.size > 5 * 1024 * 1024) {
+      setUploadStatus((prev) => ({
+        ...prev,
+        [type]: {
+          loading: false,
+          error: "File size should be less than 5MB",
+          success: false,
+        },
+      }));
+      return;
+    }
+
+    setUploadStatus((prev) => ({
+      ...prev,
+      [type]: { loading: true, error: null, success: false },
+    }));
 
     try {
-      const formDataForUpload = new FormData();
-      formDataForUpload.append('resume', file);
-      
-      const response = await axios.post('/api/profile/upload-resume', formDataForUpload, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
+      const uploadData = new FormData();
+      uploadData.append(type, file);
+
+      const response = await axios.post(
+        `/api/profile/upload-${type}`,
+        uploadData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
         }
-      });
+      );
 
       if (response.data.success) {
-        setFormData(prev => ({ 
-          ...prev, 
-          resume: {
-            url: response.data.url,
-            publicId: response.data.publicId,
-            originalName: file.name
-          }
-        }));
-        
-        setResumeUploadStatus({
-          loading: false,
-          error: null,
-          success: true
+        updateFormData("documents", type, {
+          url: response.data.url,
+          publicId: response.data.publicId,
+          originalName: file.name,
         });
+
+        setUploadStatus((prev) => ({
+          ...prev,
+          [type]: { loading: false, error: null, success: true },
+        }));
       }
     } catch (error) {
-      console.error('Resume upload error:', error);
-      setResumeUploadStatus({
-        loading: false,
-        error: error.response?.data?.message || 'Error uploading resume',
-        success: false
-      });
+      setUploadStatus((prev) => ({
+        ...prev,
+        [type]: {
+          loading: false,
+          error: error.response?.data?.message || `Error uploading ${type}`,
+          success: false,
+        },
+      }));
     }
   };
 
+  // Transform frontend form data to match backend schema
+  const transformFormDataForAPI = () => {
+    return {
+      // Basic fields from personalInfo
+      firstName: formData.personalInfo.firstName,
+      lastName: formData.personalInfo.lastName,
+      middleName: formData.personalInfo.middleName,
+      email: formData.personalInfo.email,
+      phone: formData.personalInfo.phone,
+      alternatePhone: formData.personalInfo.alternatePhone,
+      dateOfBirth: formData.personalInfo.dateOfBirth,
+      gender: formData.personalInfo.gender,
+      maritalStatus: formData.personalInfo.maritalStatus,
+      nationality: formData.personalInfo.nationality,
+      
+      // Optional fields
+      fatherName: formData.personalInfo.fatherName || '',
+      aadharNumber: formData.personalInfo.aadharNumber || '',
+      
+      // Address - use current address as main address
+      address: {
+        street: formData.address.current.street,
+        city: formData.address.current.city,
+        state: formData.address.current.state,
+        country: formData.address.current.country,
+        pincode: formData.address.current.pincode,
+        landmark: formData.address.current.landmark,
+      },
+      
+      // Permanent address if different from current
+      permanentAddress: formData.address.permanent.sameAsCurrent ? null : {
+        street: formData.address.permanent.street,
+        city: formData.address.permanent.city,
+        state: formData.address.permanent.state,
+        country: formData.address.permanent.country,
+        pincode: formData.address.permanent.pincode,
+        landmark: formData.address.permanent.landmark,
+      },
+      
+      // Education - convert array to Map structure expected by backend
+      education: formData.education.reduce((acc, edu, index) => {
+        acc[`education_${index}`] = {
+          instituteType: edu.type || 'University',
+          instituteFields: {
+            instituteName: edu.institution || '',
+            certificationBody: edu.certificationBody || edu.institution || '',
+            passingYear: parseInt(edu.year) || new Date().getFullYear(),
+            percentage: parseFloat(edu.percentage) || 0,
+            courseType: edu.courseType || 'Full-time',
+            courseDuration: parseInt(edu.duration) || 4,
+            specialization: edu.field || edu.specialization || '',
+            courseName: edu.degree || '',
+            trade: edu.trade || '',
+          }
+        };
+        return acc;
+      }, {}),
+      
+      // Experience array
+      experience: formData.experience.map(exp => ({
+        company: exp.company,
+        position: exp.position,
+        startDate: exp.startDate,
+        endDate: exp.endDate || null,
+        description: exp.description,
+      })),
+      
+      // Professional Information
+      professional: {
+        currentJobTitle: formData.professional.currentJobTitle,
+        currentCompany: formData.professional.currentCompany,
+        workExperience: formData.professional.workExperience,
+        currentSalary: formData.professional.currentSalary,
+        expectedSalary: formData.professional.expectedSalary,
+        noticePeriod: formData.professional.noticePeriod,
+        workMode: formData.professional.workMode,
+        preferredLocations: formData.professional.preferredLocations,
+        industryExperience: formData.professional.industryExperience,
+        availableFrom: formData.professional.availableFrom,
+      },
+      
+      // Skills - flatten technical and soft skills into array (for backward compatibility)
+      skills: [
+        ...formData.skills.technical,
+        ...formData.skills.soft,
+      ],
+      
+      // Detailed skills breakdown
+      skillsDetailed: {
+        technical: formData.skills.technical,
+        soft: formData.skills.soft,
+        certifications: formData.skills.certifications,
+      },
+      
+      // Languages with proficiency
+      languages: formData.skills.languages.map(lang => ({
+        name: typeof lang === 'string' ? lang : lang.name,
+        proficiency: typeof lang === 'object' ? lang.proficiency : 'Intermediate',
+      })),
+      
+      // Documents
+      documents: {
+        resume: formData.documents.resume,
+        profilePicture: formData.documents.profilePicture,
+        portfolio: formData.documents.portfolio,
+      },
+      
+      // Social Media and Portfolio Links
+      socialLinks: {
+        linkedin: formData.links.linkedin,
+        github: formData.links.github,
+        portfolio: formData.links.portfolio,
+        website: formData.links.website,
+        other: formData.links.other.map(link => ({
+          platform: typeof link === 'object' ? link.platform : 'Other',
+          url: typeof link === 'object' ? link.url : link,
+        })),
+      },
+      
+      // Job Preferences
+      preferences: {
+        jobTypes: formData.preferences.jobTypes,
+        workShifts: formData.preferences.workShifts,
+        disabilities: formData.preferences.disabilities,
+        careerObjective: formData.preferences.careerObjective,
+      },
+      
+      // Resume and profile picture (keeping for backward compatibility)
+      resume: formData.documents.resume,
+      profilePicture: formData.documents.profilePicture?.url || formData.personalInfo.profileImage,
+    };
+  };
+
+  // Handle form submission
+  const handleFormSubmit = async () => {
+    try {
+      setUploadStatus(prev => ({
+        ...prev,
+        submit: { loading: true, error: null, success: false }
+      }));
+
+      const transformedData = transformFormDataForAPI();
+      console.log('Submitting data:', transformedData);
+
+      const response = await axios.post('/api/profile/create', transformedData);
+
+      if (response.data.success) {
+        setUploadStatus(prev => ({
+          ...prev,
+          submit: { loading: false, error: null, success: true }
+        }));
+        
+        // Clear success message after 5 seconds
+        setTimeout(() => {
+          setUploadStatus(prev => ({
+            ...prev,
+            submit: { loading: false, error: null, success: false }
+          }));
+        }, 5000);
+      }
+    } catch (error) {
+      console.error('Form submission error:', error);
+      setUploadStatus(prev => ({
+        ...prev,
+        submit: { 
+          loading: false, 
+          error: error.response?.data?.message || 'Failed to save profile', 
+          success: false 
+        }
+      }));
+    }
+  };
+
+  // Transform API data back to form structure
+  const transformAPIDataToForm = (profileData) => {
+    return {
+      personalInfo: {
+        firstName: profileData.firstName || '',
+        lastName: profileData.lastName || '',
+        middleName: profileData.middleName || '',
+        email: profileData.email || '',
+        phone: profileData.phone || '',
+        alternatePhone: profileData.alternatePhone || '',
+        dateOfBirth: profileData.dateOfBirth || '',
+        gender: profileData.gender || '',
+        maritalStatus: profileData.maritalStatus || '',
+        nationality: profileData.nationality || 'Indian',
+        fatherName: profileData.fatherName || '',
+        aadharNumber: profileData.aadharNumber || '',
+        profileImage: profileData.profilePicture || null,
+      },
+      address: {
+        current: {
+          street: profileData.address?.street || '',
+          city: profileData.address?.city || '',
+          state: profileData.address?.state || '',
+          country: profileData.address?.country || 'India',
+          pincode: profileData.address?.pincode || '',
+          landmark: profileData.address?.landmark || '',
+        },
+        permanent: {
+          street: profileData.permanentAddress?.street || '',
+          city: profileData.permanentAddress?.city || '',
+          state: profileData.permanentAddress?.state || '',
+          country: profileData.permanentAddress?.country || 'India',
+          pincode: profileData.permanentAddress?.pincode || '',
+          landmark: profileData.permanentAddress?.landmark || '',
+          sameAsCurrent: !profileData.permanentAddress,
+        },
+      },
+      professional: {
+        currentJobTitle: profileData.professional?.currentJobTitle || '',
+        currentCompany: profileData.professional?.currentCompany || '',
+        workExperience: profileData.professional?.workExperience || '',
+        currentSalary: profileData.professional?.currentSalary || '',
+        expectedSalary: profileData.professional?.expectedSalary || '',
+        noticePeriod: profileData.professional?.noticePeriod || '',
+        workMode: profileData.professional?.workMode || '',
+        preferredLocations: profileData.professional?.preferredLocations || [],
+        industryExperience: profileData.professional?.industryExperience || [],
+        availableFrom: profileData.professional?.availableFrom || '',
+      },
+      education: profileData.education ? Object.values(profileData.education).map(edu => ({
+        type: edu.instituteType || '',
+        institution: edu.instituteFields?.instituteName || '',
+        degree: edu.instituteFields?.courseName || '',
+        field: edu.instituteFields?.specialization || '',
+        year: edu.instituteFields?.passingYear || '',
+        percentage: edu.instituteFields?.percentage || '',
+        courseType: edu.instituteFields?.courseType || 'Full-time',
+        duration: edu.instituteFields?.courseDuration || '',
+        trade: edu.instituteFields?.trade || '',
+      })) : [],
+      experience: profileData.experience || [],
+      skills: {
+        technical: profileData.skillsDetailed?.technical || [],
+        soft: profileData.skillsDetailed?.soft || [],
+        languages: profileData.languages || [],
+        certifications: profileData.skillsDetailed?.certifications || [],
+      },
+      documents: {
+        resume: profileData.documents?.resume || profileData.resume || null,
+        profilePicture: profileData.documents?.profilePicture || null,
+        portfolio: profileData.documents?.portfolio || null,
+      },
+      links: {
+        linkedin: profileData.socialLinks?.linkedin || '',
+        github: profileData.socialLinks?.github || '',
+        portfolio: profileData.socialLinks?.portfolio || '',
+        website: profileData.socialLinks?.website || '',
+        other: profileData.socialLinks?.other || [],
+      },
+      preferences: {
+        jobTypes: profileData.preferences?.jobTypes || [],
+        workShifts: profileData.preferences?.workShifts || [],
+        disabilities: profileData.preferences?.disabilities || '',
+        careerObjective: profileData.preferences?.careerObjective || '',
+      },
+    };
+  };
+
+  // Fetch existing profile data
+  const fetchProfileData = async () => {
+    try {
+      setIsLoadingProfile(true);
+      const response = await axios.get('/api/profile/get-user');
+      
+      if (response.data.success && response.data.profile) {
+        const transformedData = transformAPIDataToForm(response.data.profile);
+        setFormData(transformedData);
+      }
+    } catch (error) {
+      // If no profile exists, that's fine - user is creating new profile
+      if (error.response?.status !== 404) {
+        console.error('Error fetching profile:', error);
+      }
+    } finally {
+      setIsLoadingProfile(false);
+    }
+  };
+
+  // Fetch profile data when component mounts
+  React.useEffect(() => {
+    fetchProfileData();
+  }, []);
+
+  // Update profile completion when form data changes
+  React.useEffect(() => {
+    setProfileCompletion(calculateCompletion());
+  }, [formData]);
+
+  // Show loading indicator while fetching profile data
+  if (isLoadingProfile) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader className="w-8 h-8 animate-spin mx-auto mb-4 text-legpro-primary" />
+          <p className="text-gray-600">Loading your profile...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-8 px-4">
-      {/* Floating Background Elements */}
+    <div className="min-h-screen bg-gray-50 py-6 px-4">
+      {/* Background Pattern */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
-        <div className="absolute top-40 right-10 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute bottom-20 left-1/2 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-legpro-primary/5 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-legpro-primary/5 rounded-full blur-3xl"></div>
       </div>
 
-      <div className="max-w-6xl mx-auto relative z-10">
-        {/* Header Card with Glassmorphism */}
-        <div className="backdrop-blur-xl bg-white/70 rounded-3xl shadow-2xl p-8 mb-8 border border-white/40">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-6">
+      <div className="max-w-7xl mx-auto relative z-10">
+        {/* Header */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-6">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              {/* Profile Image Upload */}
               <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full blur-xl opacity-40 group-hover:opacity-60 transition-opacity"></div>
-                <div className="relative w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-xl">
-                  <Camera className="w-10 h-10 text-white" />
+                <div
+                  onClick={() => profileImageRef.current?.click()}
+                  className="w-20 h-20 bg-legpro-primary rounded-full flex items-center justify-center cursor-pointer hover:bg-legpro-primary-hover transition-colors"
+                >
+                  {formData.documents.profilePicture ? (
+                    <img
+                      src={formData.documents.profilePicture.url}
+                      alt="Profile"
+                      className="w-full h-full rounded-full object-cover"
+                    />
+                  ) : (
+                    <Camera className="w-8 h-8 text-white" />
+                  )}
                 </div>
+                <input
+                  type="file"
+                  ref={profileImageRef}
+                  onChange={(e) =>
+                    handleFileUpload(e.target.files[0], "profileImage")
+                  }
+                  accept="image/*"
+                  className="hidden"
+                />
               </div>
+
               <div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-legpro-primary via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                  Build Your Profile
+                <h1 className="text-3xl font-bold text-gray-900">
+                  Complete Your Profile
                 </h1>
-                <p className="text-gray-600 mt-2">Complete your journey to success</p>
+                <p className="text-gray-600 mt-1">
+                  Help employers find the perfect match
+                </p>
               </div>
             </div>
-            
-            {/* Animated Progress Circle */}
-            <div className="relative">
-              <svg className="w-32 h-32 transform -rotate-90">
-                <circle cx="64" cy="64" r="56" fill="none" stroke="#e5e7eb" strokeWidth="8"/>
-                <circle 
-                  cx="64" cy="64" r="56" fill="none" 
-                  stroke="url(#gradient)" 
-                  strokeWidth="8"
-                  strokeLinecap="round"
-                  strokeDasharray={`${2 * Math.PI * 56}`}
-                  strokeDashoffset={`${2 * Math.PI * 56 * (1 - profileCompletion / 100)}`}
-                  className="transition-all duration-1000 ease-out"
-                />
-                <defs>
-                  <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#3b82f6" />
-                    <stop offset="50%" stopColor="#8b5cf6" />
-                    <stop offset="100%" stopColor="#ec4899" />
-                  </linearGradient>
-                </defs>
-              </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-3xl font-bold bg-gradient-to-r from-legpro-primary to-purple-600 bg-clip-text text-transparent">
+
+            {/* Progress Indicator */}
+            <div className="flex items-center gap-4">
+              <div className="text-right">
+                <div className="text-2xl font-bold text-legpro-primary">
                   {profileCompletion}%
-                </span>
-                <span className="text-xs text-gray-500">Complete</span>
+                </div>
+                <div className="text-sm text-gray-500">Complete</div>
+              </div>
+              <div className="w-20 h-20 relative">
+                <svg className="w-full h-full transform -rotate-90">
+                  <circle
+                    cx="40"
+                    cy="40"
+                    r="36"
+                    fill="none"
+                    stroke="#f3f4f6"
+                    strokeWidth="6"
+                  />
+                  <circle
+                    cx="40"
+                    cy="40"
+                    r="36"
+                    fill="none"
+                    stroke="#00394d"
+                    strokeWidth="6"
+                    strokeLinecap="round"
+                    strokeDasharray={226}
+                    strokeDashoffset={226 * (1 - profileCompletion / 100)}
+                    className="transition-all duration-1000"
+                  />
+                </svg>
               </div>
             </div>
           </div>
         </div>
 
         {/* Step Navigation */}
-        <div className="backdrop-blur-xl bg-white/70 rounded-3xl shadow-2xl p-6 mb-8 border border-white/40">
-          <div className="flex justify-between items-center pb-2 overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-6">
+          <div className="flex justify-between items-center">
             {steps.map((step, index) => {
               const Icon = step.icon;
               const isActive = currentStep === index;
               const isCompleted = currentStep > index;
-              
+
               return (
-                <div key={index} className="flex items-center">
+                <div key={index} className="flex items-center flex-1">
                   <button
                     onClick={() => setCurrentStep(index)}
-                    className={`flex flex-col items-center gap-2 transition-all duration-300 group ${
-                      isActive ? 'scale-110' : 'scale-100'
-                    }`}
+                    className="flex flex-col items-center gap-2 w-full group"
                   >
-                    <div className={`relative w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-300 ${
-                      isActive 
-                        ? `bg-gradient-to-br ${step.color} shadow-2xl` 
-                        : isCompleted
-                        ? 'bg-green-500 shadow-lg'
-                        : 'bg-gray-200 hover:bg-gray-300'
-                    }`}>
+                    <div
+                      className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
+                        isActive
+                          ? "bg-legpro-primary text-white shadow-lg"
+                          : isCompleted
+                          ? "bg-green-500 text-white"
+                          : "bg-gray-200 text-gray-500 group-hover:bg-gray-300"
+                      }`}
+                    >
                       {isCompleted ? (
-                        <div className="text-white text-2xl">✓</div>
+                        <Check className="w-6 h-6" />
                       ) : (
-                        <Icon className={`w-7 h-7 ${isActive ? 'text-white' : 'text-gray-600'}`} />
-                      )}
-                      {isActive && (
-                        <div className="absolute inset-0 rounded-2xl bg-white/30 animate-ping"></div>
+                        <Icon className="w-6 h-6" />
                       )}
                     </div>
-                    <span className={`text-xs font-medium whitespace-nowrap ${
-                      isActive ? 'text-gray-900' : 'text-gray-500'
-                    }`}>
-                      {step.label}
-                    </span>
+
+                    <div className="text-center">
+                      <div
+                        className={`text-sm font-medium ${
+                          isActive
+                            ? "text-legpro-primary"
+                            : isCompleted
+                            ? "text-green-600"
+                            : "text-gray-500"
+                        }`}
+                      >
+                        {step.label}
+                      </div>
+                      <div className="text-xs text-gray-400 hidden sm:block">
+                        {step.description}
+                      </div>
+                    </div>
                   </button>
+
                   {index < steps.length - 1 && (
-                    <div className={`h-1 w-12 mx-2 rounded-full transition-all duration-500 ${
-                      currentStep > index ? 'bg-gradient-to-r from-green-400 to-green-600' : 'bg-gray-200'
-                    }`}></div>
+                    <div
+                      className={`flex-1 h-0.5 mx-4 transition-all ${
+                        currentStep > index ? "bg-green-500" : "bg-gray-200"
+                      }`}
+                    ></div>
                   )}
                 </div>
               );
@@ -234,377 +784,1076 @@ const ModernUserProfileForm = () => {
           </div>
         </div>
 
-        {/* Form Content Card */}
-        <div className="backdrop-blur-xl bg-white/70 rounded-3xl shadow-2xl p-8 border border-white/40">
-          {/* Personal Info Step */}
-          {currentStep === 0 && (
-            <div className="space-y-6 animate-fadeIn">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
-                  <User className="w-6 h-6 text-white" />
+        {/* Main Form Content */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200">
+          <div className="p-8">
+            {/* Personal Information - Step 0 */}
+            {currentStep === 0 && (
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 bg-legpro-primary rounded-lg flex items-center justify-center">
+                    <User className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900">
+                      Personal Information
+                    </h2>
+                    <p className="text-gray-600">Tell us about yourself</p>
+                  </div>
                 </div>
-                Personal Information
-              </h2>
-              
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="group">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">First Name</label>
-                  <div className="relative">
+
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      First Name <span className="text-red-500">*</span>
+                    </label>
                     <input
                       type="text"
-                      name="firstName"
-                      value={formData.firstName}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 pl-12 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all outline-none bg-white/50"
-                      placeholder="Enter first name"
+                      value={formData.personalInfo.firstName}
+                      onChange={(e) =>
+                        updateFormData(
+                          "personalInfo",
+                          "firstName",
+                          e.target.value
+                        )
+                      }
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-legpro-primary focus:border-transparent outline-none transition-all"
+                      placeholder="Enter your first name"
                     />
-                    <User className="absolute left-4 top-3.5 w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
                   </div>
-                </div>
 
-                <div className="group">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Last Name</label>
-                  <div className="relative">
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Middle Name
+                    </label>
                     <input
                       type="text"
-                      name="lastName"
-                      value={formData.lastName}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 pl-12 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all outline-none bg-white/50"
-                      placeholder="Enter last name"
+                      value={formData.personalInfo.middleName}
+                      onChange={(e) =>
+                        updateFormData(
+                          "personalInfo",
+                          "middleName",
+                          e.target.value
+                        )
+                      }
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-legpro-primary focus:border-transparent outline-none transition-all"
+                      placeholder="Middle name"
                     />
-                    <User className="absolute left-4 top-3.5 w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
                   </div>
-                </div>
 
-                <div className="group">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Father's Name</label>
-                  <div className="relative">
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Last Name <span className="text-red-500">*</span>
+                    </label>
                     <input
                       type="text"
-                      name="fatherName"
-                      value={formData.fatherName}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 pl-12 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all outline-none bg-white/50"
-                      placeholder="Enter father's name"
+                      value={formData.personalInfo.lastName}
+                      onChange={(e) =>
+                        updateFormData(
+                          "personalInfo",
+                          "lastName",
+                          e.target.value
+                        )
+                      }
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-legpro-primary focus:border-transparent outline-none transition-all"
+                      placeholder="Enter your last name"
                     />
-                    <Users className="absolute left-4 top-3.5 w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
                   </div>
-                </div>
 
-                <div className="group">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Date of Birth</label>
-                  <div className="relative">
-                    <input
-                      type="date"
-                      name="dateOfBirth"
-                      value={formData.dateOfBirth}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 pl-12 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all outline-none bg-white/50"
-                    />
-                    <Calendar className="absolute left-4 top-3.5 w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Email Address <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
+                      <input
+                        type="email"
+                        value={formData.personalInfo.email}
+                        onChange={(e) =>
+                          updateFormData(
+                            "personalInfo",
+                            "email",
+                            e.target.value
+                          )
+                        }
+                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-legpro-primary focus:border-transparent outline-none transition-all"
+                        placeholder="your.email@example.com"
+                      />
+                    </div>
                   </div>
-                </div>
 
-                <div className="group">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Email</label>
-                  <div className="relative">
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 pl-12 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all outline-none bg-white/50"
-                      placeholder="your.email@example.com"
-                    />
-                    <Mail className="absolute left-4 top-3.5 w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Phone Number <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
+                      <input
+                        type="tel"
+                        value={formData.personalInfo.phone}
+                        onChange={(e) =>
+                          updateFormData(
+                            "personalInfo",
+                            "phone",
+                            e.target.value
+                          )
+                        }
+                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-legpro-primary focus:border-transparent outline-none transition-all"
+                        placeholder="+91 9876543210"
+                      />
+                    </div>
                   </div>
-                </div>
 
-                <div className="group">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Phone Number</label>
-                  <div className="relative">
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Alternate Phone
+                    </label>
                     <input
                       type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 pl-12 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all outline-none bg-white/50"
-                      placeholder="10-digit number"
+                      value={formData.personalInfo.alternatePhone}
+                      onChange={(e) =>
+                        updateFormData(
+                          "personalInfo",
+                          "alternatePhone",
+                          e.target.value
+                        )
+                      }
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-legpro-primary focus:border-transparent outline-none transition-all"
+                      placeholder="Alternative contact"
                     />
-                    <Phone className="absolute left-4 top-3.5 w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
                   </div>
-                </div>
 
-                <div className="group md:col-span-2">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Gender</label>
-                  <div className="flex gap-4">
-                    {['Male', 'Female', 'Other'].map((gender) => (
-                      <label key={gender} className="flex items-center gap-2 cursor-pointer group/radio">
-                        <input
-                          type="radio"
-                          name="gender"
-                          value={gender}
-                          checked={formData.gender === gender}
-                          onChange={handleChange}
-                          className="w-5 h-5 text-blue-500 focus:ring-blue-500"
-                        />
-                        <span className="text-gray-700 group-hover/radio:text-legpro-primary transition-colors">{gender}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Address Step */}
-          {currentStep === 1 && (
-            <div className="space-y-6 animate-fadeIn">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                  <MapPin className="w-6 h-6 text-white" />
-                </div>
-                Address Details
-              </h2>
-              
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="md:col-span-2 group">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Street Address</label>
-                  <input
-                    type="text"
-                    name="street"
-                    value={formData.address.street}
-                    onChange={handleAddressChange}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all outline-none bg-white/50"
-                    placeholder="House no., Street name"
-                  />
-                </div>
-
-                <div className="group">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">City</label>
-                  <input
-                    type="text"
-                    name="city"
-                    value={formData.address.city}
-                    onChange={handleAddressChange}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all outline-none bg-white/50"
-                    placeholder="City name"
-                  />
-                </div>
-
-                <div className="group">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">State</label>
-                  <input
-                    type="text"
-                    name="state"
-                    value={formData.address.state}
-                    onChange={handleAddressChange}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all outline-none bg-white/50"
-                    placeholder="State name"
-                  />
-                </div>
-
-                <div className="group">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Country</label>
-                  <input
-                    type="text"
-                    name="country"
-                    value={formData.address.country}
-                    onChange={handleAddressChange}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all outline-none bg-white/50"
-                    placeholder="Country name"
-                  />
-                </div>
-
-                <div className="group">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">PIN Code</label>
-                  <input
-                    type="text"
-                    name="pincode"
-                    value={formData.address.pincode}
-                    onChange={handleAddressChange}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all outline-none bg-white/50"
-                    placeholder="6-digit PIN"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Skills Step */}
-          {currentStep === 4 && (
-            <div className="space-y-6 animate-fadeIn">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center">
-                  <Code className="w-6 h-6 text-white" />
-                </div>
-                Your Skills
-              </h2>
-              
-              <div className="flex flex-wrap gap-3 mb-6">
-                {formData.skills.map((skill, index) => (
-                  <div key={index} className="group relative">
-                    <div className="px-5 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-full font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">
-                      {skill}
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Date of Birth <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <Calendar className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
+                      <input
+                        type="date"
+                        value={formData.personalInfo.dateOfBirth}
+                        onChange={(e) =>
+                          updateFormData(
+                            "personalInfo",
+                            "dateOfBirth",
+                            e.target.value
+                          )
+                        }
+                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-legpro-primary focus:border-transparent outline-none transition-all"
+                      />
                     </div>
                   </div>
-                ))}
-              </div>
 
-              <div className="group">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Add Skills (comma-separated)</label>
-                <textarea
-                  className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all outline-none bg-white/50 min-h-[120px]"
-                  placeholder="JavaScript, React, Node.js, Python..."
-                />
-              </div>
-            </div>
-          )}
-          
-          {/* Resume Upload Step */}
-          {currentStep === 5 && (
-            <div className="space-y-6 animate-fadeIn">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-500 flex items-center justify-center">
-                  <FileText className="w-6 h-6 text-white" />
-                </div>
-                Resume Upload
-              </h2>
-              
-              <div className="bg-white/70 rounded-xl border-2 border-dashed border-teal-400 p-8 text-center">
-                {formData.resume ? (
-                  <div className="flex flex-col items-center">
-                    <div className="w-20 h-20 bg-teal-100 rounded-full flex items-center justify-center mb-4">
-                      <File className="w-10 h-10 text-teal-600" />
-                    </div>
-                    
-                    <h3 className="text-lg font-semibold text-gray-800">
-                      {formData.resume.originalName}
-                    </h3>
-                    
-                    <div className="flex mt-4 gap-3">
-                      <a 
-                        href={formData.resume.url} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="px-4 py-2 bg-teal-100 text-teal-700 rounded-lg flex items-center gap-2 hover:bg-teal-200 transition-colors"
-                      >
-                        <FileText className="w-4 h-4" /> View Resume
-                      </a>
-                      
-                      <button 
-                        onClick={handleFileClick}
-                        className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg flex items-center gap-2 hover:bg-gray-200 transition-colors"
-                      >
-                        <Upload className="w-4 h-4" /> Replace
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div 
-                    onClick={handleFileClick}
-                    className="cursor-pointer flex flex-col items-center"
-                  >
-                    <div className="w-20 h-20 bg-teal-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-teal-200 transition-colors">
-                      <Upload className="w-10 h-10 text-teal-600" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-gray-800 mb-2">Upload Your Resume</h3>
-                    <p className="text-gray-500 mb-4">PDF format only, max 5MB</p>
-                    
-                    <button
-                      className="px-6 py-3 bg-gradient-to-r from-teal-500 to-emerald-500 text-white rounded-xl shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all font-medium"
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Gender <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      value={formData.personalInfo.gender}
+                      onChange={(e) =>
+                        updateFormData("personalInfo", "gender", e.target.value)
+                      }
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-legpro-primary focus:border-transparent outline-none transition-all"
                     >
-                      Choose File
-                    </button>
+                      <option value="">Select Gender</option>
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                      <option value="Other">Other</option>
+                    </select>
                   </div>
-                )}
-                
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleFileChange}
-                  accept="application/pdf"
-                  className="hidden"
-                />
-                
-                {/* Upload Status Messages */}
-                {resumeUploadStatus.loading && (
-                  <div className="mt-4 bg-blue-50 text-blue-700 px-4 py-3 rounded-lg flex items-center gap-2">
-                    <div className="w-5 h-5 border-2 border-legpro-primary border-t-transparent rounded-full animate-spin"></div>
-                    <span>Uploading resume...</span>
+
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Marital Status
+                    </label>
+                    <select
+                      value={formData.personalInfo.maritalStatus}
+                      onChange={(e) =>
+                        updateFormData(
+                          "personalInfo",
+                          "maritalStatus",
+                          e.target.value
+                        )
+                      }
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-legpro-primary focus:border-transparent outline-none transition-all"
+                    >
+                      <option value="">Select Status</option>
+                      <option value="Single">Single</option>
+                      <option value="Married">Married</option>
+                      <option value="Divorced">Divorced</option>
+                      <option value="Widowed">Widowed</option>
+                    </select>
                   </div>
-                )}
-                
-                {resumeUploadStatus.error && (
-                  <div className="mt-4 bg-red-50 text-red-700 px-4 py-3 rounded-lg flex items-center gap-2">
-                    <AlertTriangle className="w-5 h-5" />
-                    <span>{resumeUploadStatus.error}</span>
-                  </div>
-                )}
-                
-                {resumeUploadStatus.success && (
-                  <div className="mt-4 bg-green-50 text-green-700 px-4 py-3 rounded-lg flex items-center gap-2">
-                    <Check className="w-5 h-5" />
-                    <span>Resume uploaded successfully!</span>
-                  </div>
-                )}
-                
-                <p className="text-xs text-gray-500 mt-8">
-                  Your resume will be shared with employers when you apply for jobs.
-                  Only PDF files are allowed to ensure compatibility with all systems.
-                </p>
+                </div>
               </div>
+            )}
+
+            {/* Address Information - Step 1 */}
+            {currentStep === 1 && (
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 bg-legpro-primary rounded-lg flex items-center justify-center">
+                    <MapPin className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900">
+                      Address Details
+                    </h2>
+                    <p className="text-gray-600">Where are you located?</p>
+                  </div>
+                </div>
+
+                <div className="space-y-8">
+                  {/* Current Address */}
+                  <div className="border border-gray-200 rounded-lg p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                      Current Address
+                    </h3>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Street Address <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          value={formData.address.current.street}
+                          onChange={(e) =>
+                            updateNestedData(
+                              "address",
+                              "current",
+                              "street",
+                              e.target.value
+                            )
+                          }
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-legpro-primary focus:border-transparent outline-none transition-all"
+                          placeholder="House no., Building, Street name"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          City <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          value={formData.address.current.city}
+                          onChange={(e) =>
+                            updateNestedData(
+                              "address",
+                              "current",
+                              "city",
+                              e.target.value
+                            )
+                          }
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-legpro-primary focus:border-transparent outline-none transition-all"
+                          placeholder="City name"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          State <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          value={formData.address.current.state}
+                          onChange={(e) =>
+                            updateNestedData(
+                              "address",
+                              "current",
+                              "state",
+                              e.target.value
+                            )
+                          }
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-legpro-primary focus:border-transparent outline-none transition-all"
+                          placeholder="State name"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          PIN Code <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          value={formData.address.current.pincode}
+                          onChange={(e) =>
+                            updateNestedData(
+                              "address",
+                              "current",
+                              "pincode",
+                              e.target.value
+                            )
+                          }
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-legpro-primary focus:border-transparent outline-none transition-all"
+                          placeholder="6-digit PIN"
+                          maxLength="6"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Country
+                        </label>
+                        <input
+                          type="text"
+                          value={formData.address.current.country}
+                          onChange={(e) =>
+                            updateNestedData(
+                              "address",
+                              "current",
+                              "country",
+                              e.target.value
+                            )
+                          }
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-legpro-primary focus:border-transparent outline-none transition-all"
+                          placeholder="Country"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Professional Information - Step 2 */}
+            {currentStep === 2 && (
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 bg-legpro-primary rounded-lg flex items-center justify-center">
+                    <Briefcase className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900">
+                      Professional Information
+                    </h2>
+                    <p className="text-gray-600">Tell us about your career</p>
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Current Job Title
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.professional.currentJobTitle}
+                      onChange={(e) =>
+                        updateFormData(
+                          "professional",
+                          "currentJobTitle",
+                          e.target.value
+                        )
+                      }
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-legpro-primary focus:border-transparent outline-none transition-all"
+                      placeholder="e.g., Software Engineer"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Current Company
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.professional.currentCompany}
+                      onChange={(e) =>
+                        updateFormData(
+                          "professional",
+                          "currentCompany",
+                          e.target.value
+                        )
+                      }
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-legpro-primary focus:border-transparent outline-none transition-all"
+                      placeholder="Company name"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Total Experience <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      value={formData.professional.workExperience}
+                      onChange={(e) =>
+                        updateFormData(
+                          "professional",
+                          "workExperience",
+                          e.target.value
+                        )
+                      }
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-legpro-primary focus:border-transparent outline-none transition-all"
+                    >
+                      <option value="">Select Experience</option>
+                      <option value="Fresher">Fresher</option>
+                      <option value="1-2 years">1-2 years</option>
+                      <option value="3-5 years">3-5 years</option>
+                      <option value="6-10 years">6-10 years</option>
+                      <option value="10+ years">10+ years</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Current Salary (Annual)
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.professional.currentSalary}
+                      onChange={(e) =>
+                        updateFormData(
+                          "professional",
+                          "currentSalary",
+                          e.target.value
+                        )
+                      }
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-legpro-primary focus:border-transparent outline-none transition-all"
+                      placeholder="e.g., 5,00,000"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Expected Salary (Annual)
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.professional.expectedSalary}
+                      onChange={(e) =>
+                        updateFormData(
+                          "professional",
+                          "expectedSalary",
+                          e.target.value
+                        )
+                      }
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-legpro-primary focus:border-transparent outline-none transition-all"
+                      placeholder="e.g., 7,00,000"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Notice Period
+                    </label>
+                    <select
+                      value={formData.professional.noticePeriod}
+                      onChange={(e) =>
+                        updateFormData(
+                          "professional",
+                          "noticePeriod",
+                          e.target.value
+                        )
+                      }
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-legpro-primary focus:border-transparent outline-none transition-all"
+                    >
+                      <option value="">Select Notice Period</option>
+                      <option value="Immediate">Immediate</option>
+                      <option value="15 days">15 days</option>
+                      <option value="1 month">1 month</option>
+                      <option value="2 months">2 months</option>
+                      <option value="3 months">3 months</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Career Objective
+                  </label>
+                  <textarea
+                    value={formData.preferences.careerObjective}
+                    onChange={(e) =>
+                      updateFormData(
+                        "preferences",
+                        "careerObjective",
+                        e.target.value
+                      )
+                    }
+                    rows="4"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-legpro-primary focus:border-transparent outline-none transition-all resize-none"
+                    placeholder="Describe your career goals and what you're looking for in your next role..."
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Education - Step 3 */}
+            {currentStep === 3 && (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-legpro-primary rounded-lg flex items-center justify-center">
+                      <GraduationCap className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-bold text-gray-900">
+                        Education
+                      </h2>
+                      <p className="text-gray-600">
+                        Add your educational qualifications
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() =>
+                      addArrayItem("education", {
+                        degree: "",
+                        field: "",
+                        institution: "",
+                        year: "",
+                        percentage: "",
+                        type: "Full-time",
+                      })
+                    }
+                    className="flex items-center gap-2 px-4 py-2 bg-legpro-primary text-white rounded-lg hover:bg-legpro-primary-hover transition-colors"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Add Education
+                  </button>
+                </div>
+
+                <div className="space-y-4">
+                  {formData.education.length === 0 ? (
+                    <div className="text-center py-8 text-gray-500">
+                      <GraduationCap className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                      <p>
+                        No education added yet. Click "Add Education" to get
+                        started.
+                      </p>
+                    </div>
+                  ) : (
+                    formData.education.map((edu, index) => (
+                      <div
+                        key={index}
+                        className="border border-gray-200 rounded-lg p-6"
+                      >
+                        <div className="flex items-center justify-between mb-4">
+                          <h4 className="font-semibold text-gray-900">
+                            Education {index + 1}
+                          </h4>
+                          <button
+                            onClick={() => removeArrayItem("education", index)}
+                            className="text-red-500 hover:text-red-700 transition-colors"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Degree/Qualification
+                            </label>
+                            <input
+                              type="text"
+                              value={edu.degree}
+                              onChange={(e) => {
+                                const updated = [...formData.education];
+                                updated[index].degree = e.target.value;
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  education: updated,
+                                }));
+                              }}
+                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-legpro-primary focus:border-transparent outline-none transition-all"
+                              placeholder="e.g., B.Tech, MBA, M.Sc"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Field of Study
+                            </label>
+                            <input
+                              type="text"
+                              value={edu.field}
+                              onChange={(e) => {
+                                const updated = [...formData.education];
+                                updated[index].field = e.target.value;
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  education: updated,
+                                }));
+                              }}
+                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-legpro-primary focus:border-transparent outline-none transition-all"
+                              placeholder="e.g., Computer Science, Marketing"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Institution Name
+                            </label>
+                            <input
+                              type="text"
+                              value={edu.institution}
+                              onChange={(e) => {
+                                const updated = [...formData.education];
+                                updated[index].institution = e.target.value;
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  education: updated,
+                                }));
+                              }}
+                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-legpro-primary focus:border-transparent outline-none transition-all"
+                              placeholder="University/College name"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Year of Passing
+                            </label>
+                            <input
+                              type="text"
+                              value={edu.year}
+                              onChange={(e) => {
+                                const updated = [...formData.education];
+                                updated[index].year = e.target.value;
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  education: updated,
+                                }));
+                              }}
+                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-legpro-primary focus:border-transparent outline-none transition-all"
+                              placeholder="e.g., 2023"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Skills - Step 5 */}
+            {currentStep === 5 && (
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 bg-legpro-primary rounded-lg flex items-center justify-center">
+                    <Code className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900">
+                      Skills & Languages
+                    </h2>
+                    <p className="text-gray-600">Showcase your abilities</p>
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Technical Skills
+                    </label>
+                    <div className="flex flex-wrap gap-2 p-4 border border-gray-300 rounded-lg min-h-[100px] bg-gray-50">
+                      {formData.skills.technical.map((skill, index) => (
+                        <span
+                          key={index}
+                          className="px-3 py-1 bg-legpro-primary text-white rounded-full text-sm flex items-center gap-2"
+                        >
+                          {skill}
+                          <button
+                            onClick={() => {
+                              const updated = formData.skills.technical.filter(
+                                (_, i) => i !== index
+                              );
+                              updateFormData("skills", "technical", updated);
+                            }}
+                            className="hover:bg-red-500 rounded-full p-0.5"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="Add technical skill and press Enter"
+                      onKeyPress={(e) => {
+                        if (e.key === "Enter" && e.target.value.trim()) {
+                          const newSkill = e.target.value.trim();
+                          if (!formData.skills.technical.includes(newSkill)) {
+                            updateFormData("skills", "technical", [
+                              ...formData.skills.technical,
+                              newSkill,
+                            ]);
+                          }
+                          e.target.value = "";
+                        }
+                      }}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-legpro-primary focus:border-transparent outline-none transition-all"
+                    />
+                  </div>
+
+                  <div className="space-y-4">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Languages
+                    </label>
+                    <div className="flex flex-wrap gap-2 p-4 border border-gray-300 rounded-lg min-h-[100px] bg-gray-50">
+                      {formData.skills.languages.map((lang, index) => (
+                        <span
+                          key={index}
+                          className="px-3 py-1 bg-green-500 text-white rounded-full text-sm flex items-center gap-2"
+                        >
+                          {lang}
+                          <button
+                            onClick={() => {
+                              const updated = formData.skills.languages.filter(
+                                (_, i) => i !== index
+                              );
+                              updateFormData("skills", "languages", updated);
+                            }}
+                            className="hover:bg-red-500 rounded-full p-0.5"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="Add language and press Enter"
+                      onKeyPress={(e) => {
+                        if (e.key === "Enter" && e.target.value.trim()) {
+                          const newLang = e.target.value.trim();
+                          if (!formData.skills.languages.includes(newLang)) {
+                            updateFormData("skills", "languages", [
+                              ...formData.skills.languages,
+                              newLang,
+                            ]);
+                          }
+                          e.target.value = "";
+                        }
+                      }}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-legpro-primary focus:border-transparent outline-none transition-all"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Portfolio & Documents - Step 6 */}
+            {currentStep === 6 && (
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 bg-legpro-primary rounded-lg flex items-center justify-center">
+                    <Globe className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900">
+                      Portfolio & Documents
+                    </h2>
+                    <p className="text-gray-600">
+                      Upload your resume and add links
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  {/* Resume Upload */}
+                  <div className="space-y-4">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Resume Upload <span className="text-red-500">*</span>
+                    </label>
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-legpro-primary transition-colors">
+                      {formData.documents.resume ? (
+                        <div className="space-y-3">
+                          <FileText className="w-12 h-12 mx-auto text-green-500" />
+                          <p className="font-medium text-gray-900">
+                            {formData.documents.resume.originalName}
+                          </p>
+                          <div className="flex justify-center gap-2">
+                            <button
+                              onClick={() => fileInputRef.current?.click()}
+                              className="px-3 py-1 text-sm bg-legpro-primary text-white rounded hover:bg-legpro-primary-hover"
+                            >
+                              Replace
+                            </button>
+                            <a
+                              href={formData.documents.resume.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+                            >
+                              View
+                            </a>
+                          </div>
+                        </div>
+                      ) : (
+                        <div
+                          onClick={() => fileInputRef.current?.click()}
+                          className="space-y-3 cursor-pointer"
+                        >
+                          <Upload className="w-12 h-12 mx-auto text-gray-400" />
+                          <div>
+                            <p className="font-medium text-gray-900">
+                              Upload Resume
+                            </p>
+                            <p className="text-sm text-gray-500">
+                              PDF, max 5MB
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={(e) =>
+                          handleFileUpload(e.target.files[0], "resume")
+                        }
+                        accept=".pdf"
+                        className="hidden"
+                      />
+                    </div>
+
+                    {uploadStatus.resume.loading && (
+                      <div className="text-blue-600 text-sm flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                        Uploading...
+                      </div>
+                    )}
+                    {uploadStatus.resume.error && (
+                      <p className="text-red-600 text-sm">
+                        {uploadStatus.resume.error}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Portfolio Links */}
+                  <div className="space-y-4">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Portfolio Links
+                    </label>
+
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-xs text-gray-600 mb-1">
+                          LinkedIn Profile
+                        </label>
+                        <input
+                          type="url"
+                          value={formData.links.linkedin}
+                          onChange={(e) =>
+                            updateFormData("links", "linkedin", e.target.value)
+                          }
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-legpro-primary focus:border-transparent outline-none transition-all"
+                          placeholder="https://linkedin.com/in/yourprofile"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs text-gray-600 mb-1">
+                          GitHub Profile
+                        </label>
+                        <input
+                          type="url"
+                          value={formData.links.github}
+                          onChange={(e) =>
+                            updateFormData("links", "github", e.target.value)
+                          }
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-legpro-primary focus:border-transparent outline-none transition-all"
+                          placeholder="https://github.com/yourusername"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs text-gray-600 mb-1">
+                          Portfolio Website
+                        </label>
+                        <input
+                          type="url"
+                          value={formData.links.portfolio}
+                          onChange={(e) =>
+                            updateFormData("links", "portfolio", e.target.value)
+                          }
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-legpro-primary focus:border-transparent outline-none transition-all"
+                          placeholder="https://yourportfolio.com"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Preferences - Step 7 */}
+            {currentStep === 7 && (
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 bg-legpro-primary rounded-lg flex items-center justify-center">
+                    <Star className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900">
+                      Job Preferences
+                    </h2>
+                    <p className="text-gray-600">What are you looking for?</p>
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-3">
+                      Preferred Job Types
+                    </label>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                      {[
+                        "Full-time",
+                        "Part-time",
+                        "Contract",
+                        "Freelance",
+                        "Internship",
+                        "Remote",
+                      ].map((type) => (
+                        <label
+                          key={type}
+                          className="flex items-center space-x-2 cursor-pointer"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={formData.preferences.jobTypes.includes(
+                              type
+                            )}
+                            onChange={(e) => {
+                              const updated = e.target.checked
+                                ? [...formData.preferences.jobTypes, type]
+                                : formData.preferences.jobTypes.filter(
+                                    (t) => t !== type
+                                  );
+                              updateFormData(
+                                "preferences",
+                                "jobTypes",
+                                updated
+                              );
+                            }}
+                            className="rounded border-gray-300 text-legpro-primary focus:ring-legpro-primary"
+                          />
+                          <span className="text-sm text-gray-700">{type}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-3">
+                      Preferred Work Shifts
+                    </label>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      {["Day Shift", "Night Shift", "Flexible"].map((shift) => (
+                        <label
+                          key={shift}
+                          className="flex items-center space-x-2 cursor-pointer"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={formData.preferences.workShifts.includes(
+                              shift
+                            )}
+                            onChange={(e) => {
+                              const updated = e.target.checked
+                                ? [...formData.preferences.workShifts, shift]
+                                : formData.preferences.workShifts.filter(
+                                    (s) => s !== shift
+                                  );
+                              updateFormData(
+                                "preferences",
+                                "workShifts",
+                                updated
+                              );
+                            }}
+                            className="rounded border-gray-300 text-legpro-primary focus:ring-legpro-primary"
+                          />
+                          <span className="text-sm text-gray-700">{shift}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Error/Success Messages */}
+          {(uploadStatus.submit?.error || uploadStatus.submit?.success) && (
+            <div className="px-8 py-4 border-t border-gray-200">
+              {uploadStatus.submit?.error && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                  <div className="flex items-center gap-2 text-red-800">
+                    <AlertTriangle className="w-5 h-5" />
+                    <span className="font-medium">Error submitting profile</span>
+                  </div>
+                  <p className="text-red-700 mt-2">{uploadStatus.submit.error}</p>
+                </div>
+              )}
+              
+              {uploadStatus.submit?.success && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                  <div className="flex items-center gap-2 text-green-800">
+                    <Check className="w-5 h-5" />
+                    <span className="font-medium">Profile submitted successfully!</span>
+                  </div>
+                  <p className="text-green-700 mt-2">Your profile has been created and saved.</p>
+                </div>
+              )}
             </div>
           )}
 
           {/* Navigation Buttons */}
-          <div className="flex justify-between mt-8 pt-6 border-t border-gray-200">
+          <div className="bg-gray-50 px-8 py-6 flex justify-between items-center rounded-b-2xl">
             <button
               onClick={() => setCurrentStep(Math.max(0, currentStep - 1))}
               disabled={currentStep === 0}
-              className={`px-8 py-3 rounded-xl font-semibold transition-all ${
+              className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all ${
                 currentStep === 0
-                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300 hover:shadow-lg transform hover:-translate-y-0.5'
+                  ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:shadow-md"
               }`}
             >
               Previous
             </button>
 
-            {currentStep < steps.length - 1 ? (
-              <button
-                onClick={() => setCurrentStep(Math.min(steps.length - 1, currentStep + 1))}
-                className="px-8 py-3 rounded-xl bg-gradient-to-r from-legpro-primary to-purple-600 text-white font-semibold hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all"
-              >
-                Next Step
-              </button>
-            ) : (
-              <button className="px-8 py-3 rounded-xl bg-gradient-to-r from-green-600 to-teal-600 text-white font-semibold hover:from-green-700 hover:to-teal-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all">
-                Submit Profile
-              </button>
-            )}
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-gray-500">
+                Step {currentStep + 1} of {steps.length}
+              </span>
+
+              {currentStep < steps.length - 1 ? (
+                <button
+                  onClick={() =>
+                    setCurrentStep(Math.min(steps.length - 1, currentStep + 1))
+                  }
+                  className="flex items-center gap-2 px-6 py-3 bg-legpro-primary text-white rounded-lg font-medium hover:bg-legpro-primary-hover transition-all shadow-md hover:shadow-lg"
+                >
+                  Next Step
+                </button>
+              ) : (
+                <button
+                  onClick={handleFormSubmit}
+                  disabled={uploadStatus.submit?.loading}
+                  className="flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {uploadStatus.submit?.loading ? (
+                    <>
+                      <Loader className="w-4 h-4 animate-spin" />
+                      Submitting...
+                    </>
+                  ) : (
+                    <>
+                      <Check className="w-4 h-4" />
+                      Submit Profile
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.5s ease-out;
-        }
-      `}</style>
     </div>
   );
 };
 
-export default ModernUserProfileForm;
+export default UserProfileForm;

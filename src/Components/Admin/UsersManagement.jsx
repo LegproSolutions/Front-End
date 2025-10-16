@@ -1,4 +1,4 @@
-import { Calendar, Mail, Search, User } from "lucide-react";
+import { Calendar, Mail, Phone, Search, User } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { Badge } from "../../components/ui/badge";
@@ -88,13 +88,17 @@ const UsersManagement = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
-                        <h3 className="font-semibold text-gray-900 truncate">{user.name || "Unnamed"}</h3>
+                        <h3 className="font-semibold text-gray-900 truncate">{user.firstName + " " + user.lastName}</h3>
                         <Badge variant="outline">User</Badge>
                       </div>
-                      <div className="mt-1 text-sm text-gray-600 flex items-center gap-2 truncate">
+                      <a href={`mailto:${user.email}`} className="mt-1 hover:underline text-sm text-gray-600 flex items-center gap-2 truncate">
                         <Mail className="h-4 w-4 flex-shrink-0" />
                         <span className="truncate">{user.email}</span>
-                      </div>
+                      </a>
+                      <a href={`tel:${user.phone}`} className="mt-1 hover:underline text-sm text-gray-600 flex items-center gap-2 truncate">
+                        <Phone className="h-4 w-4 flex-shrink-0" />
+                        <span className="truncate">{user.phone}</span>
+                      </a>
                       <div className="mt-1 text-xs text-gray-500 flex items-center gap-2">
                         <Calendar className="h-3 w-3" />
                         Joined {formatDate(user.date || user.createdAt)}

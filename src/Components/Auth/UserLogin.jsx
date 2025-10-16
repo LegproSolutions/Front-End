@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from "react";
 import { AppContext } from "../../context/AppContext";
 import axios from "../../utils/axiosConfig";
 import toast from "react-hot-toast";
-import { Eye, EyeOff, Lock, Mail, User, Briefcase, Users, Trophy } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail, User, Briefcase, Users, Trophy, Phone } from "lucide-react";
 import { useGoogleLogin } from "@react-oauth/google";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
@@ -19,6 +19,7 @@ const UserLogin = ({ isOpen, onClose }) => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [phone, setPhone] = useState("");
 
   // Using user-specific state setters from AppContext
   const {
@@ -167,7 +168,7 @@ const UserLogin = ({ isOpen, onClose }) => {
         // User Signup API call
         const { data } = await axios.post(
           `${backendUrl}/api/users/user-register`,
-          { name, email, password }
+          { name, email, phone, password }
         );
 
         if (data.success) {
@@ -317,6 +318,24 @@ const UserLogin = ({ isOpen, onClose }) => {
                       />
                     </div>
                   </div>
+
+                  {state === "signup" && (
+                    <div className="space-y-2">
+                      <Label htmlFor="phone">Phone No.</Label>
+                      <div className="relative">
+                        <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="phone"
+                          type="text"
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                          className="pl-10"
+                          placeholder="+91 xxxxxxxxxx"
+                          required
+                        />
+                      </div>
+                    </div>
+                  )}
 
                   {state !== "forgot" && (
                     <div className="space-y-2">

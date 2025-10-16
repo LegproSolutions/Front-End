@@ -508,13 +508,18 @@ const UserProfileForm = () => {
   };
 
   // Transform API data back to form structure
-  const transformAPIDataToForm = (profileData) => {
+  const transformAPIDataToForm = (profileData, userData = null) => {
+    // Parse name from userData if available
+    const userFirstName = userData?.name?.split(' ')[0] || '';
+    const userLastName = userData?.name?.split(' ').slice(1).join(' ') || '';
+    
     return {
       personalInfo: {
-        firstName: profileData.firstName || '',
-        lastName: profileData.lastName || '',
+        // Prioritize userData for name and email, fallback to profileData
+        firstName: userFirstName || profileData.firstName || '',
+        lastName: userLastName || profileData.lastName || '',
         middleName: profileData.middleName || '',
-        email: profileData.email || '',
+        email: userData?.email || profileData.email || '',
         phone: profileData.phone || '',
         alternatePhone: profileData.alternatePhone || '',
         dateOfBirth: profileData.dateOfBirth || '',
@@ -523,7 +528,8 @@ const UserProfileForm = () => {
         nationality: profileData.nationality || 'Indian',
         fatherName: profileData.fatherName || '',
         aadharNumber: profileData.aadharNumber || '',
-        profileImage: profileData.profilePicture || null,
+        // Prioritize userData image, then profilePicture, then documents.profilePicture
+        profileImage: userData?.image || profileData.profilePicture || profileData.documents?.profilePicture || null,
       },
       address: {
         current: {
@@ -595,20 +601,66 @@ const UserProfileForm = () => {
     };
   };
 
+  // Fetch current user data (for prefilling name and email)
+  const fetchCurrentUser = async () => {
+    try {
+      const response = await axios.get('/api/users/user');
+      
+      if (response.data.success && response.data.user) {
+        return response.data.user;
+      }
+    } catch (error) {
+      console.error('Error fetching current user:', error);
+    }
+    return null;
+  };
+
   // Fetch existing profile data
   const fetchProfileData = async () => {
     try {
       setIsLoadingProfile(true);
+      
+      // First fetch current user data
+      const userData = await fetchCurrentUser();
+      
+      // Then fetch profile data
       const response = await axios.get('/api/profile/get-user');
       
       if (response.data.success && response.data.profile) {
-        const transformedData = transformAPIDataToForm(response.data.profile);
+        const transformedData = transformAPIDataToForm(response.data.profile, userData);
         setFormData(transformedData);
+      } else if (userData) {
+        // If no profile exists but we have user data, prefill basic info
+        setFormData(prev => ({
+          ...prev,
+          personalInfo: {
+            ...prev.personalInfo,
+            firstName: userData.name?.split(' ')[0] || '',
+            lastName: userData.name?.split(' ').slice(1).join(' ') || '',
+            email: userData.email || '',
+            profileImage: userData.image || null,
+          }
+        }));
       }
     } catch (error) {
       // If no profile exists, that's fine - user is creating new profile
       if (error.response?.status !== 404) {
         console.error('Error fetching profile:', error);
+      }
+      
+      // Still try to prefill user data even if profile fetch fails
+      const userData = await fetchCurrentUser();
+      if (userData) {
+        setFormData(prev => ({
+          ...prev,
+          personalInfo: {
+            ...prev.personalInfo,
+            firstName: userData.name?.split(' ')[0] || '',
+            lastName: userData.name?.split(' ').slice(1).join(' ') || '',
+            email: userData.email || '',
+            profileImage: userData.image || null,
+          }
+        }));
       }
     } finally {
       setIsLoadingProfile(false);
@@ -863,23 +915,27 @@ const UserProfileForm = () => {
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-700">
                       Email Address <span className="text-red-500">*</span>
+                      <span className="text-xs text-gray-500 ml-2">(From your account)</span>
                     </label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
                       <input
                         type="email"
                         value={formData.personalInfo.email}
-                        onChange={(e) =>
-                          updateFormData(
-                            "personalInfo",
-                            "email",
-                            e.target.value
-                          )
-                        }
-                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-legpro-primary focus:border-transparent outline-none transition-all"
+                        readOnly
+                        disabled
+                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-600 cursor-not-allowed"
                         placeholder="your.email@example.com"
                       />
+                      <div className="absolute right-3 top-3.5">
+                        <div className="w-5 h-5 bg-gray-200 rounded-full flex items-center justify-center">
+                          <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                        </div>
+                      </div>
                     </div>
+                    <p className="text-xs text-gray-500">
+                      Email cannot be changed as it's linked to your account
+                    </p>
                   </div>
 
                   <div className="space-y-2">
@@ -1420,6 +1476,164 @@ const UserProfileForm = () => {
                               placeholder="e.g., 2023"
                             />
                           </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Experience - Step 4 */}
+            {currentStep === 4 && (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-legpro-primary rounded-lg flex items-center justify-center">
+                      <Award className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-bold text-gray-900">Work Experience</h2>
+                      <p className="text-gray-600">Add your professional work history</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => addArrayItem('experience', {
+                      company: '',
+                      position: '',
+                      startDate: '',
+                      endDate: '',
+                      description: '',
+                      currentlyWorking: false
+                    })}
+                    className="flex items-center gap-2 px-4 py-2 bg-legpro-primary text-white rounded-lg hover:bg-legpro-primary-hover transition-colors"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Add Experience
+                  </button>
+                </div>
+
+                <div className="space-y-4">
+                  {formData.experience.length === 0 ? (
+                    <div className="text-center py-8 text-gray-500">
+                      <Award className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                      <p>No work experience added yet. Click "Add Experience" to get started.</p>
+                    </div>
+                  ) : (
+                    formData.experience.map((exp, index) => (
+                      <div key={index} className="border border-gray-200 rounded-lg p-6">
+                        <div className="flex items-center justify-between mb-4">
+                          <h4 className="font-semibold text-gray-900">Experience {index + 1}</h4>
+                          <button
+                            onClick={() => removeArrayItem('experience', index)}
+                            className="text-red-500 hover:text-red-700 transition-colors"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                        
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Company Name
+                            </label>
+                            <input
+                              type="text"
+                              value={exp.company}
+                              onChange={(e) => {
+                                const updatedExperience = [...formData.experience];
+                                updatedExperience[index].company = e.target.value;
+                                setFormData(prev => ({ ...prev, experience: updatedExperience }));
+                              }}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-legpro-primary focus:border-transparent outline-none"
+                              placeholder="Enter company name"
+                            />
+                          </div>
+                          
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Job Title/Position
+                            </label>
+                            <input
+                              type="text"
+                              value={exp.position}
+                              onChange={(e) => {
+                                const updatedExperience = [...formData.experience];
+                                updatedExperience[index].position = e.target.value;
+                                setFormData(prev => ({ ...prev, experience: updatedExperience }));
+                              }}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-legpro-primary focus:border-transparent outline-none"
+                              placeholder="Enter your position"
+                            />
+                          </div>
+                          
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Start Date
+                            </label>
+                            <input
+                              type="date"
+                              value={exp.startDate}
+                              onChange={(e) => {
+                                const updatedExperience = [...formData.experience];
+                                updatedExperience[index].startDate = e.target.value;
+                                setFormData(prev => ({ ...prev, experience: updatedExperience }));
+                              }}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-legpro-primary focus:border-transparent outline-none"
+                            />
+                          </div>
+                          
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              End Date
+                            </label>
+                            <div className="space-y-2">
+                              <input
+                                type="date"
+                                value={exp.endDate}
+                                disabled={exp.currentlyWorking}
+                                onChange={(e) => {
+                                  const updatedExperience = [...formData.experience];
+                                  updatedExperience[index].endDate = e.target.value;
+                                  setFormData(prev => ({ ...prev, experience: updatedExperience }));
+                                }}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-legpro-primary focus:border-transparent outline-none disabled:bg-gray-100"
+                              />
+                              <label className="flex items-center gap-2">
+                                <input
+                                  type="checkbox"
+                                  checked={exp.currentlyWorking || false}
+                                  onChange={(e) => {
+                                    const updatedExperience = [...formData.experience];
+                                    updatedExperience[index].currentlyWorking = e.target.checked;
+                                    if (e.target.checked) {
+                                      updatedExperience[index].endDate = '';
+                                    }
+                                    setFormData(prev => ({ ...prev, experience: updatedExperience }));
+                                  }}
+                                  className="rounded border-gray-300 text-legpro-primary focus:ring-legpro-primary"
+                                />
+                                <span className="text-sm text-gray-600">Currently working here</span>
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="mt-4">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Job Description
+                          </label>
+                          <textarea
+                            value={exp.description}
+                            onChange={(e) => {
+                              const updatedExperience = [...formData.experience];
+                              updatedExperience[index].description = e.target.value;
+                              setFormData(prev => ({ ...prev, experience: updatedExperience }));
+                            }}
+                            rows={3}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-legpro-primary focus:border-transparent outline-none resize-none"
+                            placeholder="Describe your responsibilities and achievements..."
+                          />
                         </div>
                       </div>
                     ))

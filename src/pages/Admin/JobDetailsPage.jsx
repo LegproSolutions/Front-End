@@ -4,6 +4,7 @@ import axios from "../../utils/axiosConfig";
 import toast from "react-hot-toast";
 import Navbar from "./AdminNavbar";
 import DetailsNavbarPage from "./DetailsNavbarPage";
+import SafeHtml from "../../utils/SafeHtml";
 
 const backendUrl = import.meta.env?.VITE_API_URL;
 
@@ -15,41 +16,24 @@ const JobDetailsPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchUnverifiedJobs = async () => {
+    const fetchJob = async () => {
       try {
-        // Fetch all unverified jobs to find the specific job by ID
-        const res = await axios.get(`${backendUrl}/api/admin/unverified-jobs`);
-
-        if (res.data.success) {
-          const foundJob = res.data.jobs.find((job) => job._id === jobId);
-          if (foundJob) {
-            setJob(foundJob);
-          } else {
-            toast.error("Job not found.");
-            navigate("/admin/dashboard");
-          }
+        const res = await axios.get(`${backendUrl}/api/jobs/${jobId}`, { withCredentials: true });
+        if (res.data?.success && res.data.job) {
+          setJob(res.data.job);
         } else {
-          toast.error("Failed to fetch jobs");
+          toast.error("Job not found.");
+          navigate("/admin/dashboard");
         }
       } catch (error) {
-        console.error("Error fetching unverified jobs:", error);
-        toast.error("Something went wrong!");
+        console.error("Error fetching job:", error);
+        toast.error("Failed to load job details");
       }
     };
-
-    fetchUnverifiedJobs();
+    if (jobId) fetchJob();
   }, [jobId, navigate]);
 
-  const handleVerify = async () => {
-    try {
-      await axios.put(`${backendUrl}/api/admin/verify/${jobId}`, {}, { withCredentials: true });
-      toast.success("Job verified successfully!");
-      navigate("/admin/dashboard"); // Navigate back to dashboard after verification
-    } catch (error) {
-      console.error("Verification failed", error);
-      toast.error("Failed to verify job.");
-    }
-  };
+  // Verify flow not available (no endpoint). If needed, implement later.
 
   const handleSubmitObjection = async () => {
     if (!objectionMessage.trim()) {
@@ -107,10 +91,7 @@ const JobDetailsPage = () => {
           {/* Job Description */}
           <div>
             <h2 className="text-lg font-semibold text-gray-800 border-b pb-1 mb-2">Job Description</h2>
-            <div
-              className="text-base text-gray-700 leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: job.description }}
-            />
+            <SafeHtml html={job.description} className="text-base text-gray-700 leading-relaxed" />
           </div>
 
           {/* Job Details */}
@@ -180,15 +161,6 @@ const JobDetailsPage = () => {
 
           {/* Action Buttons */}
           <div className="flex justify-center gap-4 pt-4">
-            <button
-              onClick={handleVerify}
-              className="bg-green-600 hover:bg-green-700 transition text-white font-medium py-2 px-6 rounded-lg shadow-md flex items-center gap-2"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-              Verify
-            </button>
             <button
               onClick={() => setShowObjectionModal(true)}
               className="bg-red-600 hover:bg-red-700 transition text-white font-medium py-2 px-6 rounded-lg shadow-md flex items-center gap-2"

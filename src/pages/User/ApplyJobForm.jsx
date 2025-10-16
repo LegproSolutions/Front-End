@@ -1,12 +1,19 @@
-import React, { useContext, useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { ChevronLeft } from "lucide-react";
+import {
+  Calendar,
+  ChevronLeft,
+  Mail,
+  MapPin,
+  Phone,
+  User
+} from "lucide-react";
+import { useContext, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../../Components/Navbar";
 import { AppContext } from "../../context/AppContext";
-import axios from "../../utils/axiosConfig"
+import axios from "../../utils/axiosConfig";
 // import EducationForm from "../Components/EducationForm";
-import EducationForm from "../../Components/Form/EducationForm";
 import toast from "react-hot-toast";
+import EducationForm from "../../Components/Form/EducationForm";
 
 const ApplyJobForm = ({ jobTitle}) => {
   const { id: jobId } = useParams();
@@ -90,6 +97,8 @@ const ApplyJobForm = ({ jobTitle}) => {
   const [profileLoaded, setProfileLoaded] = useState(false);
   // For the address checkbox state
   const [sameAsCurrent, setSameAsCurrent] = useState(false);
+  // For validation errors
+  const [fieldErrors, setFieldErrors] = useState({});
 
   
   // On mount, fetch the user profile and map DB fields to form fields
@@ -190,6 +199,12 @@ const onCancel=()=>{
   // Standard handleChange for non-nested fields
   const handleChange = (e, section = null, index = null) => {
     const { name, value } = e.target;
+    
+    // Clear field error when user starts typing
+    if (!section) {
+      clearFieldError(name);
+    }
+    
     if (section) {
       // For array-based sections (like experience)
       if (index !== null) {
@@ -283,11 +298,70 @@ const onCancel=()=>{
     setFormData((prev) => ({ ...prev, skills: newSkills }));
   };
 
+  // Validation for essential fields only
+  const validateEssentialFields = () => {
+    const errors = [];
+    const newFieldErrors = {};
+    
+    // Essential personal information
+    if (!formData.firstName?.trim()) {
+      errors.push("First name is required");
+      newFieldErrors.firstName = "First name is required";
+    }
+    
+    if (!formData.lastName?.trim()) {
+      errors.push("Last name is required");
+      newFieldErrors.lastName = "Last name is required";
+    }
+    
+    if (!formData.email?.trim()) {
+      errors.push("Email is required");
+      newFieldErrors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      errors.push("Please enter a valid email address");
+      newFieldErrors.email = "Please enter a valid email address";
+    }
+    
+    if (!formData.phone?.trim()) {
+      errors.push("Phone number is required");
+      newFieldErrors.phone = "Phone number is required";
+    } else if (!/^[\+]?[\d\s\-\(\)]{10,}$/.test(formData.phone.replace(/\s/g, ""))) {
+      errors.push("Please enter a valid phone number");
+      newFieldErrors.phone = "Please enter a valid phone number";
+    }
+    
+    if (!formData.dateOfBirth) {
+      errors.push("Date of birth is required");
+      newFieldErrors.dateOfBirth = "Date of birth is required";
+    }
+    
+    setFieldErrors(newFieldErrors);
+    return errors;
+  };
+
+  // Clear field error when user starts typing
+  const clearFieldError = (fieldName) => {
+    if (fieldErrors[fieldName]) {
+      setFieldErrors(prev => ({
+        ...prev,
+        [fieldName]: null
+      }));
+    }
+  };
+
   // Submit application
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validate essential fields
+    const validationErrors = validateEssentialFields();
+    
+    if (validationErrors.length > 0) {
+      toast.error(`Please fix the following errors:\n${validationErrors.join('\n')}`);
+      return;
+    }
+    
     try {
-   
       const result = await applyForJob(jobId, formData);
       if (result.success) {
         toast.success("Applied Successfully");
@@ -306,60 +380,108 @@ const onCancel=()=>{
   return (
     <>
       <Navbar />
-      <div className="bg-white shadow-lg rounded-lg p-6 max-w-4xl mx-auto mt-6">
-        <div className="flex items-center justify-between mb-6">
-          <button
-            onClick={onCancel}
-            className="flex items-center text-gray-600 hover:text-gray-800"
-          >
-            <ChevronLeft size={20} />
-            <span>Back to Job Details</span>
-          </button>
-          <h2 className="text-2xl font-bold text-center text-legpro-primary">
-            Apply for {jobTitle}
-          </h2>
+      <div className="min-h-screen bg-gray-50 py-6 px-4">
+        {/* Background Pattern */}
+        <div className="fixed inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-legpro-primary/5 rounded-full blur-3xl"></div>
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-legpro-primary/5 rounded-full blur-3xl"></div>
         </div>
 
-        {profileLoaded && (
-          <div className="mb-4 p-4 bg-green-50 text-green-700 rounded-md">
-            Your profile data has been pre-filled. Please review and update any
-            information before submitting.
-          </div>
-        )}
+        <div className="max-w-7xl mx-auto relative z-10">
+          {/* Header */}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-6">
+            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={onCancel}
+                  className="flex items-center text-gray-600 hover:text-gray-800 transition-colors"
+                >
+                  <ChevronLeft size={20} />
+                  <span className="ml-1">Back to Job Details</span>
+                </button>
+                <div>
+                  <h1 className="text-3xl font-bold text-gray-900">
+                    Apply for Position
+                  </h1>
+                  <p className="text-gray-600 mt-1">
+                    {jobTitle || "Complete your application"}
+                  </p>
+                </div>
+              </div>
+            </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Personal Info */}
-          <div className="bg-gray-50 p-4 rounded-md">
-            <h3 className="text-lg font-semibold mb-4 text-blue-700">
-              Personal Information
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* First Name */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  First Name
-                </label>
-                <input
-                  type="text"
-                  name="firstName"
-                  value={formData.firstName}
-                  onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded-md"
-                />
+            {profileLoaded && (
+              <div className="mt-4 p-4 bg-green-50 text-green-700 rounded-lg border border-green-200">
+                <div className="flex items-center gap-2">
+                  <User className="w-5 h-5 text-green-600" />
+                  <span>Your profile data has been pre-filled. Please review and update any information before submitting.</span>
+                </div>
               </div>
-              {/* Last Name */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Last Name
-                </label>
-                <input
-                  type="text"
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded-md"
-                />
+            )}
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Personal Information Card */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-legpro-primary rounded-lg flex items-center justify-center">
+                  <User className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">Personal Information</h3>
+                  <p className="text-sm text-gray-600">Basic details about yourself</p>
+                </div>
               </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* First Name */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    First Name <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
+                    <input
+                      type="text"
+                      name="firstName"
+                      value={formData.firstName}
+                      onChange={handleChange}
+                      className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:border-transparent outline-none transition-all ${
+                        fieldErrors.firstName 
+                          ? 'border-red-300 focus:ring-red-200' 
+                          : 'border-gray-300 focus:ring-legpro-primary'
+                      }`}
+                      placeholder="Enter your first name"
+                    />
+                  </div>
+                  {fieldErrors.firstName && (
+                    <p className="text-red-500 text-sm mt-1">{fieldErrors.firstName}</p>
+                  )}
+                </div>
+
+                {/* Last Name */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Last Name <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
+                    <input
+                      type="text"
+                      name="lastName"
+                      value={formData.lastName}
+                      onChange={handleChange}
+                      className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:border-transparent outline-none transition-all ${
+                        fieldErrors.lastName 
+                          ? 'border-red-300 focus:ring-red-200' 
+                          : 'border-gray-300 focus:ring-legpro-primary'
+                      }`}
+                      placeholder="Enter your last name"
+                    />
+                  </div>
+                  {fieldErrors.lastName && (
+                    <p className="text-red-500 text-sm mt-1">{fieldErrors.lastName}</p>
+                  )}
+                </div>
               {/* Father’s Name */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -421,45 +543,77 @@ const onCancel=()=>{
                   <option value="other">Other</option>
                 </select>
               </div>
-              {/* Date of Birth */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Date of Birth
-                </label>
-                <input
-                  type="date"
-                  name="dateOfBirth"
-                  value={formData.dateOfBirth}
-                  onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded-md"
-                />
-              </div>
-              {/* Email */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded-md"
-                />
-              </div>
-              {/* Phone */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Phone
-                </label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded-md"
-                />
-              </div>
+                {/* Date of Birth */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Date of Birth <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <Calendar className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
+                    <input
+                      type="date"
+                      name="dateOfBirth"
+                      value={formData.dateOfBirth}
+                      onChange={handleChange}
+                      className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:border-transparent outline-none transition-all ${
+                        fieldErrors.dateOfBirth 
+                          ? 'border-red-300 focus:ring-red-200' 
+                          : 'border-gray-300 focus:ring-legpro-primary'
+                      }`}
+                    />
+                  </div>
+                  {fieldErrors.dateOfBirth && (
+                    <p className="text-red-500 text-sm mt-1">{fieldErrors.dateOfBirth}</p>
+                  )}
+                </div>
+                {/* Email */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Email Address <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:border-transparent outline-none transition-all ${
+                        fieldErrors.email 
+                          ? 'border-red-300 focus:ring-red-200' 
+                          : 'border-gray-300 focus:ring-legpro-primary'
+                      }`}
+                      placeholder="your.email@example.com"
+                    />
+                  </div>
+                  {fieldErrors.email && (
+                    <p className="text-red-500 text-sm mt-1">{fieldErrors.email}</p>
+                  )}
+                </div>
+                {/* Phone */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Phone Number <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:border-transparent outline-none transition-all ${
+                        fieldErrors.phone 
+                          ? 'border-red-300 focus:ring-red-200' 
+                          : 'border-gray-300 focus:ring-legpro-primary'
+                      }`}
+                      placeholder="+91 9876543210"
+                    />
+                  </div>
+                  {fieldErrors.phone && (
+                    <p className="text-red-500 text-sm mt-1">{fieldErrors.phone}</p>
+                  )}
+                </div>
               {/* Alternate Phone */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -528,12 +682,18 @@ const onCancel=()=>{
             </div>
           </div>
 
-          {/* Address Information */}
-          <div className="bg-gray-50 p-4 rounded-md">
-            <h3 className="text-lg font-semibold mb-4 text-blue-700">
-              Address Information
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Address Information Card */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-legpro-primary rounded-lg flex items-center justify-center">
+                  <MapPin className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">Address Information</h3>
+                  <p className="text-sm text-gray-600">Current and permanent addresses</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Current Address */}
               <div>
                 <h4 className="text-base font-medium mb-2">Current Address</h4>
@@ -930,6 +1090,7 @@ const onCancel=()=>{
             </button>
           </div>
         </form>
+        </div>
       </div>
     </>
   );

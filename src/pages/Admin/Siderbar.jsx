@@ -1,20 +1,20 @@
 import { useContext } from "react";
 import { AppContext } from "../../context/AppContext";
-import { UserCheck, Briefcase, User } from "lucide-react";
+import { Plus, Briefcase, User, Building2, BarChart3 } from "lucide-react";
 
 const Sidebar = ({ activeTab, setActiveTab }) => {
   const { isAdminSidebar } = useContext(AppContext);
 
   const tabs = [
     {
-      name: "Verify Recruiter",
-      icon: <UserCheck className="w-5 h-5" />,
-      value: "recruiters",
+      name: "Create Job",
+      icon: <Plus className="w-5 h-5" />,
+      value: "create_job",
     },
     {
-      name: "Verify Job Posts",
+      name: "Manage Jobs",
       icon: <Briefcase className="w-5 h-5" />,
-      value: "jobs",
+      value: "manage_jobs",
     },
     {
       name: "All Users",
@@ -22,11 +22,15 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
       value: "all_user",
     },
     {
-      name: "All Recruiter",
-      icon: <User className="w-5 h-5" />,
-      value: "all_recruiter",
+      name: "Companies",
+      icon: <Building2 className="w-5 h-5" />,
+      value: "companies",
     },
-    // Credit system removed
+    {
+      name: "Analytics",
+      icon: <BarChart3 className="w-5 h-5" />,
+      value: "analytics",
+    },
   ];
 
   return (

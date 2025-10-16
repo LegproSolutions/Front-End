@@ -16,7 +16,6 @@ export const AppContextProvider = (props) => {
   const [isSearched, setIsSearched] = useState(false);
   const [jobs, setJobs] = useState([]);
   const [homeJobs, sethomeJobs] = useState([]);
-  const [jobType, setJobType] = useState('');
   const [jobApplicants, setJobApplicants] = useState([]);
   const [jobAppData, setJobAppData] = useState([]);
   const [selectedJobId, setSelectedJobId] = useState(null);
@@ -88,7 +87,7 @@ export const AppContextProvider = (props) => {
         if (isAuthenticated) {
           await fetchCompanyJobs(); // This already updates `jobs`
         } else {
-          const { data } = await axios.get(`${backendUrl}/api/jobs?type=${jobType}`);
+          const { data } = await axios.get(`${backendUrl}/api/jobs`);
           if (data.success) {
             // Server already filters for verified jobs
             sethomeJobs(data.jobs);
@@ -102,7 +101,7 @@ export const AppContextProvider = (props) => {
     };
 
     fetchJobs();
-  }, [isAuthenticated, isAuthLoading, jobType]); // Remove fetchHomeJobs dependency
+  }, [isAuthenticated, isAuthLoading]); // Remove fetchHomeJobs dependency
 
   // Central authentication check for Admin
   useEffect(() => {
@@ -592,6 +591,7 @@ export const AppContextProvider = (props) => {
   }, [backendUrl]);
 
   const value = {
+    backendUrl,
     // Existing states
     searchFilter,
     setSearchFilter,
@@ -659,8 +659,7 @@ export const AppContextProvider = (props) => {
     setIsAuthLoading,
     isJobsLoading,
     setIsJobsLoading,
-    jobType,
-    setJobType,
+    
     jobsPagination,
     fetchHomeJobs,
     loginOpen,

@@ -52,9 +52,7 @@ const Navbar = () => {
         <div className="container flex h-16 items-center justify-between px-4 mx-auto max-w-7xl">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 group">
-            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-legpro-primary shadow-lg group-hover:shadow-xl transition-shadow">
-              <span className="text-white">J</span>
-            </div>
+         
             <div className="flex flex-col">
               <h1 className="text-xl font-bold text-legpro-primary">
                 Job Mela
@@ -203,9 +201,7 @@ const Navbar = () => {
                 <div className="flex flex-col space-y-6 mt-8">
                   {/* Mobile Logo */}
                   <div className="flex items-center space-x-3 pb-4 border-b">
-                    <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-legpro-primary shadow-lg">
-                      <Briefcase className="w-5 h-5 text-white" />
-                    </div>
+                    
                     <div className="flex flex-col">
                       <h2 className="text-lg font-bold text-legpro-primary">
                         Job Mela

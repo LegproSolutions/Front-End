@@ -18,8 +18,9 @@ import EducationForm from "../../Components/Form/EducationForm";
 const ApplyJobForm = ({ jobTitle}) => {
   const { id: jobId } = useParams();
   const navigate = useNavigate();
-  const { applyForJob, userData, setUserData } = useContext(AppContext);
+  const { applyForJob, setUserData } = useContext(AppContext);
   const backendUrl = import.meta.env?.VITE_API_URL;
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     // Personal Information
@@ -362,6 +363,7 @@ const onCancel=()=>{
     }
     
     try {
+      setLoading(true);
       const result = await applyForJob(jobId, formData);
       if (result.success) {
         toast.success("Applied Successfully");
@@ -374,6 +376,8 @@ const onCancel=()=>{
       toast.error(
         "An error occurred while submitting your application. Please try again."
       );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -1084,6 +1088,7 @@ const onCancel=()=>{
           <div className="flex justify-end">
             <button
               type="submit"
+              disabled={loading}
               className="bg-legpro-primary text-white px-6 py-3 rounded-md hover:bg-blue-700 focus:outline-none font-medium"
             >
               Submit Application

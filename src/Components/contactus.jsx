@@ -63,8 +63,7 @@ const ContactUs = () => {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-700">Email Us</p>
-                    <p className="text-sm text-gray-600">support@jobmela.com</p>
-                    <p className="text-sm text-gray-600">careers@jobmela.com</p>
+                    <p className="text-sm text-gray-600">Jobmela@legpro.co.in</p>
                   </div>
                 </div>
 

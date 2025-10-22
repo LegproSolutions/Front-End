@@ -1,10 +1,12 @@
-import { Calendar, Mail, Phone, Search, User } from "lucide-react";
+import { Calendar, Mail, Phone, Search, User, Download } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { Badge } from "../../components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { Input } from "../../components/ui/input";
+import { Button } from "../../components/ui/button";
 import axios from "../../utils/axiosConfig";
+import { exportToCSV } from "../../utils/csvExport";
 
 const backendUrl = import.meta.env?.VITE_API_URL;
 
@@ -45,6 +47,17 @@ const UsersManagement = () => {
 
   const formatDate = (d) => (d ? new Date(d).toLocaleDateString("en-IN") : "-");
 
+  const exportUsersCSV = () => {
+    const rows = filtered.map((u) => ({
+      Name: [u.firstName, u.lastName].filter(Boolean).join(" ") || u.name || "",
+      Email: u.email || "",
+      Phone: u.phone || "",
+      Role: "User",
+      Joined: formatDate(u.date || u.createdAt),
+    }));
+    exportToCSV({ data: rows, filename: "users" });
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -65,8 +78,8 @@ const UsersManagement = () => {
         </CardHeader>
         <CardContent>
           {/* Search */}
-          <div className="mb-6 max-w-md">
-            <div className="relative">
+          <div className="mb-6 flex flex-col md:flex-row gap-3 md:items-center">
+            <div className="relative max-w-md w-full">
               <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search by name or email..."
@@ -74,6 +87,11 @@ const UsersManagement = () => {
                 onChange={(e) => setQuery(e.target.value)}
                 className="pl-10"
               />
+            </div>
+            <div className="md:ml-auto">
+              <Button variant="outline" onClick={exportUsersCSV} className="flex items-center gap-2">
+                <Download className="h-4 w-4" /> Download CSV
+              </Button>
             </div>
           </div>
 

@@ -5,7 +5,8 @@ import {
   Mail,
   MapPin,
   Phone,
-  Search
+  Search,
+  Download,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -14,6 +15,7 @@ import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { Input } from "../../components/ui/input";
 import axios from "../../utils/axiosConfig";
+import { exportToCSV } from "../../utils/csvExport";
 
 const backendUrl = import.meta.env?.VITE_API_URL;
 
@@ -78,6 +80,21 @@ const CompaniesManagement = () => {
       .slice(0, 2);
   };
 
+  const exportCompaniesCSV = () => {
+    const rows = filteredCompanies.map((c) => ({
+      Name: c.name || "",
+      Email: c.email || "",
+      Phone: c.phone || "",
+      City: c.city || "",
+      State: c.state || "",
+      Website: c.website || "",
+      Verified: c.isVerified ? "Yes" : "No",
+      Premium: c.havePremiumAccess ? "Yes" : "No",
+      Joined: formatDate(c.date || c.createdAt),
+    }));
+    exportToCSV({ data: rows, filename: "companies" });
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -99,9 +116,9 @@ const CompaniesManagement = () => {
           </p>
         </CardHeader>
         <CardContent>
-          {/* Search */}
-          <div className="mb-6">
-            <div className="relative max-w-md">
+          {/* Search + Export */}
+          <div className="mb-6 flex flex-col md:flex-row gap-3 md:items-center">
+            <div className="relative max-w-md w-full">
               <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search companies by name, email, or location..."
@@ -109,6 +126,11 @@ const CompaniesManagement = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
               />
+            </div>
+            <div className="md:ml-auto">
+              <Button variant="outline" onClick={exportCompaniesCSV} className="flex items-center gap-2">
+                <Download className="h-4 w-4" /> Download CSV
+              </Button>
             </div>
           </div>
 

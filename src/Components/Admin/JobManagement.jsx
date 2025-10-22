@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button } from "../../components/ui/button";
 import {
   Card,
@@ -28,9 +27,18 @@ import {
   Download,
   Award,
   Briefcase,
+  Loader,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import axios from "../../utils/axiosConfig";
+import { exportToCSV } from "../../utils/csvExport";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const backendUrl = import.meta.env?.VITE_API_URL;
 
@@ -51,9 +59,16 @@ const JobManagement = () => {
   const [userProfileModal, setUserProfileModal] = useState({
     open: false,
     user: null,
+    application: null,
   });
   const [loadingApplicants, setLoadingApplicants] = useState(false);
   const [loadingUserProfile, setLoadingUserProfile] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState(
+    userProfileModal.application
+      ? userProfileModal.application.status?.toLowerCase()
+      : "pending"
+  );
+  const [updateStatusLoading, setUpdateStatusLoading] = useState(false);
   const [editForm, setEditForm] = useState({
     employmentType: "",
     salary: 0,
@@ -62,7 +77,6 @@ const JobManagement = () => {
     visible: false,
   });
 
-  const navigate = useNavigate();
   const jobsPerPage = 10;
 
   // --- DATA FETCHING ---
@@ -114,6 +128,48 @@ const JobManagement = () => {
     const startIndex = (currentPage - 1) * jobsPerPage;
     return filteredJobs.slice(startIndex, startIndex + jobsPerPage);
   }, [filteredJobs, currentPage, jobsPerPage]);
+
+  // --- CSV EXPORT HELPERS ---
+  const exportJobsCSV = () => {
+    const now = new Date();
+    const rows = filteredJobs.map((job) => {
+      const deadline = job.deadline ? new Date(job.deadline) : null;
+      let status = job.visible ? "Active" : "Inactive";
+      if (deadline && deadline < now) status = "Expired";
+      return {
+        Title: job.title || "",
+        Company: job.companyId?.name || "",
+        Location: job.location || "",
+        Category: job.category || "",
+        "Employment Type": job.employmentType || "",
+        Salary: job.salary || "",
+        Openings: job.openings || "",
+        Experience: job.experience || "",
+        Deadline: job.deadline ? new Date(job.deadline).toLocaleDateString("en-IN") : "",
+        Visible: job.visible ? "Yes" : "No",
+        Status: status,
+        "Posted On": new Date(job.date || job.createdAt || Date.now()).toLocaleDateString("en-IN"),
+      };
+    });
+    exportToCSV({ data: rows, filename: "jobs" });
+  };
+
+  const exportApplicantsCSV = () => {
+    const rows = (applicantsModal.applicants || []).map((application) => {
+      const applicant = application.userId || application;
+      return {
+        Name: applicant.name || applicant.firstName || "",
+        Email: applicant.email || "",
+        Phone: applicant.phone || "",
+        Status: (application.status || "").toString(),
+        "Applied On": new Date(
+          application.appliedAt || application.createdAt || Date.now()
+        ).toLocaleString("en-IN"),
+        "Resume URL": applicant.resume || applicant.resumeUrl || "",
+      };
+    });
+    exportToCSV({ data: rows, filename: `applications_${applicantsModal.job?.title || "job"}` });
+  };
 
   // --- EVENT HANDLERS ---
   const handleDeleteJob = async (jobId) => {
@@ -168,9 +224,9 @@ const JobManagement = () => {
     setApplicantsModal({ open: false, job: null, applicants: [] });
   };
 
-  const handleViewUserProfile = async (userId) => {
+  const handleViewUserProfile = async (userId, application = null) => {
     setLoadingUserProfile(true);
-    setUserProfileModal({ open: true, user: null });
+    setUserProfileModal({ open: true, user: null, application: null });
 
     try {
       const response = await axios.get(
@@ -184,7 +240,11 @@ const JobManagement = () => {
         setUserProfileModal((prev) => ({
           ...prev,
           user: response.data.profile || response.data.user,
+          application: application,
         }));
+        setSelectedStatus(
+          application ? application.status?.toLowerCase() : "pending"
+        );
       } else {
         toast.error(response.data.message || "Failed to fetch user profile");
       }
@@ -199,7 +259,88 @@ const JobManagement = () => {
   };
 
   const closeUserProfileModal = () => {
-    setUserProfileModal({ open: false, user: null });
+    setUserProfileModal({ open: false, user: null, application: null });
+  };
+
+  // --- APPLICATION STATUS MANAGEMENT ---
+  const handleUpdateStatus = async (
+    applicationId,
+    applicantName,
+    newStatus
+  ) => {
+    if (updateStatusLoading) return;
+    try {
+      setUpdateStatusLoading(true);
+
+      const response = await axios.put(
+        `${backendUrl}/api/admin/applications/${applicationId}/status`,
+        {
+          status: newStatus,
+        },
+        { withCredentials: true }
+      );
+
+      if (response.data.success) {
+        // Update the applicants list in the modal
+        setApplicantsModal((prev) => ({
+          ...prev,
+          applicants: prev.applicants.map((applicant) => {
+            const id = applicant._id || applicant.applicationId;
+            return id === applicationId
+              ? { ...applicant, status: newStatus }
+              : applicant;
+          }),
+        }));
+
+        // Update the user profile modal if it's open for this application
+        if (
+          userProfileModal.application &&
+          (userProfileModal.application._id === applicationId ||
+            userProfileModal.application.applicationId === applicationId)
+        ) {
+          setUserProfileModal((prev) => ({
+            ...prev,
+            application: { ...prev.application, status: newStatus },
+          }));
+        }
+
+        toast.success(
+          `Application from ${applicantName} has been updated successfully!`
+        );
+      } else {
+        toast.error(response.data.message || "Failed to update application");
+      }
+    } catch (error) {
+      console.error("Error accepting application:", error);
+      toast.error(
+        `Failed to accept application from ${applicantName}. Please try again.`
+      );
+    } finally {
+      setUpdateStatusLoading(false);
+    }
+  };
+
+  const getApplicationStatusBadge = (status) => {
+    switch (status?.toLowerCase()) {
+      case "accepted":
+        return (
+          <Badge className="bg-green-500 hover:bg-green-600 text-white">
+            Accepted
+          </Badge>
+        );
+      case "rejected":
+        return <Badge variant="destructive">Rejected</Badge>;
+      case "pending":
+        return <Badge variant="secondary">Pending</Badge>;
+      case "under_review":
+        return <Badge variant="warning">Under Review</Badge>;
+      case "interviewed":
+        return <Badge variant="primary">Interviewed</Badge>;
+      case "onboarded":
+        return <Badge variant="primary">Onboarded</Badge>;
+      default:
+        return <Badge variant="secondary">Pending</Badge>;
+    }
   };
 
   const startEdit = (job) => {
@@ -296,8 +437,8 @@ const JobManagement = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {/* Search and Filters */}
-          <div className="flex flex-col md:flex-row gap-4 mb-6">
+          {/* Search and Filters + Export */}
+          <div className="flex flex-col md:flex-row gap-4 mb-6 items-stretch md:items-center">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
@@ -320,6 +461,12 @@ const JobManagement = () => {
                 onChange={(e) => setFilterLocation(e.target.value)}
                 className="w-full md:w-40"
               />
+            </div>
+            <div className="md:ml-auto">
+              <Button variant="outline" onClick={exportJobsCSV} className="flex items-center gap-2">
+                <Download className="h-4 w-4" />
+                Download CSV
+              </Button>
             </div>
           </div>
 
@@ -567,7 +714,7 @@ const JobManagement = () => {
       {applicantsModal.open && (
         <div className="fixed inset-0 -top-6 h-screen z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-6xl max-h-[90vh] p-6 m-4 overflow-hidden flex flex-col">
-            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center justify-between mb-6">
               <div>
                 <h3 className="text-2xl font-bold text-gray-800">
                   Job Applications
@@ -585,6 +732,15 @@ const JobManagement = () => {
                 <X className="h-4 w-4" />
               </Button>
             </div>
+            
+            {/* Export applicants */}
+            {!loadingApplicants && applicantsModal.applicants?.length > 0 && (
+              <div className="mb-4">
+                <Button variant="outline" size="sm" onClick={exportApplicantsCSV} className="flex items-center gap-2">
+                  <Download className="h-4 w-4" /> Export CSV
+                </Button>
+              </div>
+            )}
 
             <div className="flex-1 overflow-y-auto">
               {loadingApplicants ? (
@@ -611,7 +767,8 @@ const JobManagement = () => {
                         className="border border-gray-200 cursor-pointer hover:shadow-md transition-shadow"
                         onClick={() =>
                           handleViewUserProfile(
-                            applicant._id || applicant.userId
+                            applicant._id || applicant.userId,
+                            application
                           )
                         }
                       >
@@ -635,14 +792,17 @@ const JobManagement = () => {
                                 Click to view full profile
                               </p>
                             </div>
-                            <Badge variant="outline" className="text-xs">
-                              Applied{" "}
-                              {new Date(
-                                application.appliedAt ||
-                                  application.createdAt ||
-                                  Date.now()
-                              ).toLocaleDateString()}
-                            </Badge>
+                            <div className="flex flex-col gap-2 items-end">
+                              <Badge variant="outline" className="text-xs">
+                                Applied{" "}
+                                {new Date(
+                                  application.appliedAt ||
+                                    application.createdAt ||
+                                    Date.now()
+                                ).toLocaleDateString()}
+                              </Badge>
+                              {getApplicationStatusBadge(application.status)}
+                            </div>
                           </div>
                         </CardHeader>
                         <CardContent className="space-y-2">
@@ -663,7 +823,8 @@ const JobManagement = () => {
                             )}
                           </div>
 
-                          <div className="pt-2 flex gap-2">
+                          {/* Contact and document buttons */}
+                          <div className="flex gap-2 pt-2">
                             <Button
                               size="sm"
                               variant="outline"
@@ -1130,10 +1291,83 @@ const JobManagement = () => {
               )}
             </div>
 
-            <div className="mt-6 pt-4 border-t flex justify-end">
-              <Button variant="outline" onClick={closeUserProfileModal}>
-                Close
-              </Button>
+            <div className="mt-6 pt-4 border-t">
+              {/* Accept/Reject buttons - only show if application is provided and status is pending */}
+              {userProfileModal.application && (
+                <div className="flex gap-3 mb-4">
+                  <Select
+                    defaultValue={selectedStatus}
+                    onValueChange={setSelectedStatus}
+                  >
+                    <SelectTrigger className="w-48">
+                      <SelectValue placeholder="Change Application Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pending">Pending</SelectItem>
+                      <SelectItem value="accepted">
+                        Accept Application
+                      </SelectItem>
+                      <SelectItem value="rejected">
+                        Reject Application
+                      </SelectItem>
+                      <SelectItem value="under_review">Under Review</SelectItem>
+                      <SelectItem value="interviewed">Interviewed</SelectItem>
+                      <SelectItem value="onboarded">Onboarded</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Button
+                    variant="outline"
+                    onClick={() =>
+                      handleUpdateStatus(
+                        userProfileModal.application._id,
+                        userProfileModal.user.firstName,
+                        selectedStatus.toLowerCase()
+                      )
+                    }
+                  >
+                    {updateStatusLoading && (
+                      <Loader className="animate-spin" />
+                    )}
+                    Update Status
+                  </Button>
+                </div>
+              )}
+
+              {/* Application Status Display */}
+              {userProfileModal.application &&
+                userProfileModal.application.status &&
+                userProfileModal.application.status.toLowerCase() !==
+                  "pending" && (
+                  <div className="mb-4 p-3 rounded-lg border bg-gray-50">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-gray-700">
+                        Application Status:
+                      </span>
+                      {getApplicationStatusBadge(
+                        userProfileModal.application.status
+                      )}
+                    </div>
+                    {userProfileModal.application.reviewedAt && (
+                      <p className="text-sm text-gray-600 mt-1">
+                        Reviewed on{" "}
+                        {new Date(
+                          userProfileModal.application.reviewedAt
+                        ).toLocaleString()}
+                      </p>
+                    )}
+                    {userProfileModal.application.rejectionReason && (
+                      <p className="text-sm text-gray-600 mt-1">
+                        Reason: {userProfileModal.application.rejectionReason}
+                      </p>
+                    )}
+                  </div>
+                )}
+
+              <div className="flex justify-end">
+                <Button variant="outline" onClick={closeUserProfileModal}>
+                  Close
+                </Button>
+              </div>
             </div>
           </div>
         </div>

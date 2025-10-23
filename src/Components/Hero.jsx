@@ -177,11 +177,11 @@ const Hero = () => {
           <div className="relative">
             {/* Main Illustration */}
             <div className="relative bg-legpro-primary/10 rounded-3xl p-8">
-              <img 
-                src={assets.app_main_img} 
-                alt="Job Search Illustration" 
-                className="w-full h-auto max-w-md mx-auto"
-              />
+            <img
+  src="https://img.freepik.com/premium-photo/young-happy-indian-businessman-smiling-with-arms-crossed_251136-50289.jpg"
+  alt="Indian business professional smiling for job search banner"
+  className="w-full h-auto max-w-md mx-auto scale-150 -translate-x-10"
+/>
               
               {/* Floating Cards */}
               <div className="absolute -top-4 -left-4 bg-white rounded-xl p-3 shadow-lg">

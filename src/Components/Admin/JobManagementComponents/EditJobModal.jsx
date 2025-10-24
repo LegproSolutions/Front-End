@@ -24,6 +24,7 @@ const EditJobModal = ({
   submitEdit,
 }) => {
   const [companies, setCompanies] = useState([]);
+  const [errors, setErrors] = useState({});
 
   // fetch companies for selection (no create option here)
   useEffect(() => {
@@ -40,28 +41,65 @@ const EditJobModal = ({
     fetchCompanies();
   }, []);
 
-  // when modal opens, ensure editForm has companyId prefilled from job if available
+  // when modal opens, prefill editForm with job company info (if present)
   useEffect(() => {
     if (editModal?.open && editModal.job) {
       const cid = editModal.job.companyId?._id || editModal.job.companyId || "";
-      if (cid) {
-        setEditForm((f) => ({ ...f, companyId: cid }));
-      }
+      setEditForm((f) => ({
+        ...f,
+        companyId: cid || f.companyId || "",
+        companyCity: editModal.job.companyDetails?.city || f.companyCity || "",
+        companyState: editModal.job.companyDetails?.state || f.companyState || "",
+        companyCountry: editModal.job.companyDetails?.country || f.companyCountry || "",
+      }));
     }
-  }, [editModal?.open]);
+  }, [editModal?.open, editModal?.job]);
 
   if (!editModal?.open) return null;
 
   const onCompanyChange = (value) => {
     // find company details and set minimal fields on editForm
-    const selected = companies.find((c) => c._id === value) || null;
+    const selected = companies.find((c) => String(c._id) === String(value)) || null;
     setEditForm((f) => ({
       ...f,
       companyId: value,
-      companyCity: selected?.city || f.companyCity || "",
-      companyState: selected?.state || f.companyState || "",
-      companyCountry: selected?.country || f.companyCountry || "",
+      companyCity: selected?.city || "",
+      companyState: selected?.state || "",
+      companyCountry: selected?.country || "",
     }));
+  };
+
+  // When companies are loaded and a companyId is already set (prefill case), sync the location fields from the company doc
+  useEffect(() => {
+    if (companies.length && editForm?.companyId) {
+      const sel = companies.find((c) => String(c._id) === String(editForm.companyId));
+      if (sel) {
+        setEditForm((f) => ({
+          ...f,
+          companyCity: sel.city || f.companyCity || "",
+          companyState: sel.state || f.companyState || "",
+          companyCountry: sel.country || f.companyCountry || "",
+        }));
+      }
+    }
+  }, [companies, editForm?.companyId]);
+
+  const handleSave = () => {
+    const city = (editForm.companyCity || "").toString().trim();
+    const state = (editForm.companyState || "").toString().trim();
+    const country = (editForm.companyCountry || "").toString().trim();
+    const newErrors = {};
+    if (!city) newErrors.companyCity = "Company city is required";
+    if (!state) newErrors.companyState = "Company state is required";
+    if (!country) newErrors.companyCountry = "Company country is required";
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      // keep modal open and show errors
+      return;
+    }
+    // all good
+    setErrors({});
+    submitEdit();
   };
 
   return (
@@ -77,7 +115,7 @@ const EditJobModal = ({
           <div className="space-y-2">
             <Label htmlFor="companyId">Select Existing Company</Label>
             <Select
-              value={editForm.companyId || ""}
+              value={String(editForm.companyId || "")}
               onValueChange={onCompanyChange}
             >
               <SelectTrigger>
@@ -85,7 +123,7 @@ const EditJobModal = ({
               </SelectTrigger>
               <SelectContent>
                 {companies.map((company) => (
-                  <SelectItem key={company._id} value={company._id}>
+                  <SelectItem key={company._id} value={String(company._id)}>
                     {company.name} ({company.email})
                   </SelectItem>
                 ))}
@@ -105,7 +143,11 @@ const EditJobModal = ({
                   setEditForm((f) => ({ ...f, companyCity: e.target.value }))
                 }
                 placeholder="City"
+                className={errors.companyCity ? 'border-red-500 focus:border-red-600' : ''}
               />
+              {errors.companyCity && (
+                <p className="text-sm text-red-600 mt-1">{errors.companyCity}</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="companyState">Company State</Label>
@@ -117,7 +159,11 @@ const EditJobModal = ({
                   setEditForm((f) => ({ ...f, companyState: e.target.value }))
                 }
                 placeholder="State"
+                className={errors.companyState ? 'border-red-500 focus:border-red-600' : ''}
               />
+              {errors.companyState && (
+                <p className="text-sm text-red-600 mt-1">{errors.companyState}</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="companyCountry">Company Country</Label>
@@ -129,7 +175,11 @@ const EditJobModal = ({
                   setEditForm((f) => ({ ...f, companyCountry: e.target.value }))
                 }
                 placeholder="Country"
+                className={errors.companyCountry ? 'border-red-500 focus:border-red-600' : ''}
               />
+              {errors.companyCountry && (
+                <p className="text-sm text-red-600 mt-1">{errors.companyCountry}</p>
+              )}
             </div>
           </div>
         </div>
@@ -301,7 +351,7 @@ const EditJobModal = ({
             Cancel
           </Button>
           <Button
-            onClick={submitEdit}
+            onClick={handleSave}
             className="bg-legpro-primary hover:bg-legpro-primary-hover"
           >
             Save Changes

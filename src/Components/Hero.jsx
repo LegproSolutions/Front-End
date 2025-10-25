@@ -1,5 +1,15 @@
 import React, { useState, useContext } from "react";
-import { Search, MapPin, Briefcase, TrendingUp, Users, Building, Star, ArrowRight, CheckCircle } from "lucide-react";
+import {
+  Search,
+  MapPin,
+  Briefcase,
+  TrendingUp,
+  Users,
+  Building,
+  Star,
+  ArrowRight,
+  CheckCircle,
+} from "lucide-react";
 import { AppContext } from "../context/AppContext";
 import { JobLocations, assets } from "../assets/assets";
 import { Button } from "../components/ui/button";
@@ -20,10 +30,23 @@ const Hero = () => {
   const [selectedJobType, setSelectedJobType] = useState("");
 
   // Get job titles and locations from available jobs
-  const jobTitles = [...new Set(homeJobs.map(job => job.title).filter(Boolean))];
-  const jobLocations = [...new Set([...homeJobs.map(job => job.location).filter(Boolean), ...JobLocations])];
+  const jobTitles = [
+    ...new Set(homeJobs.map((job) => job.title).filter(Boolean)),
+  ];
+  const jobLocations = [
+    ...new Set([
+      ...homeJobs.map((job) => job.location).filter(Boolean),
+      ...JobLocations,
+    ]),
+  ];
 
-  const jobTypes = ["Full-time", "Part-time", "Contract", "Remote", "Internship"];
+  const jobTypes = [
+    "Full-time",
+    "Part-time",
+    "Contract",
+    "Remote",
+    "Internship",
+  ];
 
   const handleSearch = () => {
     const searchFilters = {
@@ -31,62 +54,84 @@ const Hero = () => {
       location: locationInput,
       jobType: selectedJobType,
     };
-    
+
     setSearchFilter(searchFilters);
     setIsSearched(true);
-    
+
     // Scroll to job listing section
-    document.querySelector('#job-listing')?.scrollIntoView({ 
-      behavior: 'smooth' 
+    document.querySelector("#job-listing")?.scrollIntoView({
+      behavior: "smooth",
     });
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleSearch();
     }
   };
 
   // Sample statistics (you can replace with real data)
   const stats = [
-    { icon: Briefcase, label: "Active Jobs", value: homeJobs.length || "1000+", color: "text-legpro-primary" },
-    { icon: Users, label: "Job Seekers", value: "50K+", color: "text-green-600" },
-    { icon: Building, label: "Companies", value: "500+", color: "text-purple-600" },
-    { icon: CheckCircle, label: "Success Rate", value: "95%", color: "text-orange-600" },
+    {
+      icon: Briefcase,
+      label: "Active Jobs",
+      value: homeJobs.length || "1000+",
+      color: "text-legpro-primary",
+    },
+    {
+      icon: Users,
+      label: "Job Seekers",
+      value: "50K+",
+      color: "text-green-600",
+    },
+    {
+      icon: Building,
+      label: "Companies",
+      value: "500+",
+      color: "text-purple-600",
+    },
+    {
+      icon: CheckCircle,
+      label: "Success Rate",
+      value: "95%",
+      color: "text-orange-600",
+    },
   ];
 
   const features = [
     "Advanced job matching algorithm",
-    "Direct employer connections", 
+    "Direct employer connections",
     "24/7 application support",
-    "Career guidance & tips"
+    "Career guidance & tips",
   ];
 
   return (
     <div className="relative min-h-screen bg-gray-50">
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] -z-10" />
-      
+
       <div className="container mx-auto px-4 pt-24 pb-16">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
           <div className="space-y-8">
             {/* Main Headlines */}
             <div className="space-y-4">
-              <Badge variant="outline" className="w-fit text-legpro-primary border-legpro-primary">
+              <Badge
+                variant="outline"
+                className="w-fit text-legpro-primary border-legpro-primary"
+              >
                 🚀 India's Leading Job Portal
               </Badge>
               <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 leading-tight">
                 Find Your
-                <span className="text-legpro-primary">
-                  {" "}Dream Job
-                </span>
+                <span className="text-legpro-primary"> Dream Job</span>
                 <br />
                 Today
               </h1>
               <p className="text-xl text-gray-600 max-w-lg">
-                Connect with top employers and discover opportunities that match your skills. 
-                Join thousands of professionals who found their perfect career with Job Mela.
+                Connect with top employers and discover opportunities that match
+                your skills. Join thousands of professionals who found their
+                perfect career with Job Mela.
               </p>
             </div>
 
@@ -135,11 +180,9 @@ const Hero = () => {
                       ))}
                     </datalist>
                   </div>
-
-               
                 </div>
-                
-                <Button 
+
+                <Button
                   onClick={handleSearch}
                   className="w-full h-12 text-base font-semibold bg-legpro-primary hover:bg-legpro-primary-hover text-white"
                 >
@@ -161,15 +204,18 @@ const Hero = () => {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button 
+              <Button
                 size="lg"
                 className="bg-legpro-primary hover:bg-legpro-primary/90"
-                onClick={() => document.querySelector('#job-listing')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() =>
+                  document
+                    .querySelector("#job-listing")
+                    ?.scrollIntoView({ behavior: "smooth" })
+                }
               >
                 Browse All Jobs
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
-              
             </div>
           </div>
 
@@ -177,12 +223,13 @@ const Hero = () => {
           <div className="relative">
             {/* Main Illustration */}
             <div className="relative bg-legpro-primary/10 rounded-3xl p-8">
-            <img
-  src="https://img.freepik.com/premium-photo/young-happy-indian-businessman-smiling-with-arms-crossed_251136-50289.jpg"
-  alt="Indian business professional smiling for job search banner"
-  className="w-full h-auto max-w-md mx-auto scale-150 -translate-x-10"
-/>
-              
+              <img
+                src="/professional-businesswoman.jpg"
+                alt="Indian business professional smiling for job search banner"
+                loading="eager"
+                className="w-full h-auto max-w-md mx-auto scale-150 -translate-x-10 rounded-2xl"
+              />
+
               {/* Floating Cards */}
               <div className="absolute -top-4 -left-4 bg-white rounded-xl p-3 shadow-lg">
                 <div className="flex items-center space-x-2">
@@ -217,10 +264,15 @@ const Hero = () => {
             {stats.map((stat, index) => {
               const Icon = stat.icon;
               return (
-                <Card key={index} className="border-0 bg-white/60 backdrop-blur">
+                <Card
+                  key={index}
+                  className="border-0 bg-white/60 backdrop-blur"
+                >
                   <CardContent className="p-6 text-center">
                     <Icon className={cn("w-8 h-8 mx-auto mb-3", stat.color)} />
-                    <p className="text-2xl font-bold text-gray-900 mb-1">{stat.value}</p>
+                    <p className="text-2xl font-bold text-gray-900 mb-1">
+                      {stat.value}
+                    </p>
                     <p className="text-sm text-gray-600">{stat.label}</p>
                   </CardContent>
                 </Card>
@@ -236,10 +288,11 @@ const Hero = () => {
               Popular Job Categories
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Explore opportunities across different industries and find the perfect match for your skills.
+              Explore opportunities across different industries and find the
+              perfect match for your skills.
             </p>
           </div>
-          
+
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {[
               { name: "Technology", count: "150+ jobs", icon: "💻" },
@@ -249,8 +302,8 @@ const Hero = () => {
               { name: "Engineering", count: "200+ jobs", icon: "⚙️" },
               { name: "Education", count: "60+ jobs", icon: "📚" },
             ].map((category, index) => (
-              <Card 
-                key={index} 
+              <Card
+                key={index}
                 className="cursor-pointer transition-all duration-200 hover:shadow-lg hover:-translate-y-1 border-0 bg-white/80 backdrop-blur"
                 onClick={() => {
                   setTitleInput(category.name);
@@ -259,7 +312,9 @@ const Hero = () => {
               >
                 <CardContent className="p-4 text-center">
                   <div className="text-2xl mb-2">{category.icon}</div>
-                  <h3 className="font-semibold text-gray-900 mb-1">{category.name}</h3>
+                  <h3 className="font-semibold text-gray-900 mb-1">
+                    {category.name}
+                  </h3>
                   <p className="text-xs text-gray-500">{category.count}</p>
                 </CardContent>
               </Card>

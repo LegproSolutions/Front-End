@@ -87,7 +87,7 @@ const JobCard = ({ job, viewMode = "grid" }) => {
                 <AvatarImage 
                   src={getCompanyLogo()} 
                   alt={getCompanyName()}
-                  className="object-cover h-12 w-12 rounded-none"
+                  className="object-contain h-12 w-12 rounded-none"
                 />
                 <AvatarFallback>
                   <Building className="h-6 w-6" />

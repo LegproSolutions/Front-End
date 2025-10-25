@@ -83,10 +83,11 @@ const JobCard = ({ job, viewMode = "grid" }) => {
           <div className="flex flex-col md:flex-row gap-4">
             {/* Company Logo & Basic Info */}
             <div className="flex items-start gap-4 flex-1">
-              <Avatar className="h-12 w-12 border">
+              <Avatar className="h-12 w-12 border rounded-none">
                 <AvatarImage 
                   src={getCompanyLogo()} 
                   alt={getCompanyName()}
+                  className="object-cover h-12 w-12 rounded-none"
                 />
                 <AvatarFallback>
                   <Building className="h-6 w-6" />
@@ -182,10 +183,11 @@ const JobCard = ({ job, viewMode = "grid" }) => {
       <CardHeader className="pb-4">
         <div className="flex items-start justify-between">
           <div className="flex items-start gap-3">
-            <Avatar className="h-12 w-12 border">
+            <Avatar className="h-12 w-12 border rounded-none">
               <AvatarImage 
                 src={getCompanyLogo()} 
                 alt={getCompanyName()}
+                className="object-cover h-12 w-12 rounded-none"
               />
               <AvatarFallback>
                 <Building className="h-6 w-6" />

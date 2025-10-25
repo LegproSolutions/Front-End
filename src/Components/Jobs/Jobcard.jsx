@@ -9,17 +9,16 @@ import {
   Briefcase,
   Building,
   Calendar,
-  TrendingUp,
   ExternalLink,
-  Bookmark,
-  BookmarkPlus,
-  Star,
 } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardHeader } from "../../components/ui/card";
 import { Badge } from "../../components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";
-import { cn } from "../../lib/utils";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "../../components/ui/avatar";
 
 const JobCard = ({ job, viewMode = "grid" }) => {
   const navigate = useNavigate();
@@ -59,7 +58,7 @@ const JobCard = ({ job, viewMode = "grid" }) => {
     const jobDate = new Date(date);
     const diffTime = Math.abs(now - jobDate);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays === 1) return "1 day ago";
     if (diffDays < 7) return `${diffDays} days ago`;
     if (diffDays < 30) return `${Math.ceil(diffDays / 7)} weeks ago`;
@@ -83,30 +82,28 @@ const JobCard = ({ job, viewMode = "grid" }) => {
           <div className="flex flex-col md:flex-row gap-4">
             {/* Company Logo & Basic Info */}
             <div className="flex items-start gap-4 flex-1">
-              <Avatar className="h-12 w-12 border rounded-none">
-                <AvatarImage 
-                  src={getCompanyLogo()} 
-                  alt={getCompanyName()}
-                  className="object-contain h-12 w-12 rounded-none"
-                />
-                <AvatarFallback>
-                  <Building className="h-6 w-6" />
-                </AvatarFallback>
-              </Avatar>
-              
+              <img
+                src={getCompanyLogo()}
+                alt={getCompanyName()}
+                className="object-contain h-16 w-16 rounded-none"
+                onError={(e) => {
+                  e.target.src =
+                    "https://cdn.iconscout.com/icon/premium/png-256-thumb/building-icon-svg-download-png-1208046.png?f=webp&w=128";
+                }}
+              />
+
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between mb-2">
                   <div>
                     <h3 className="font-semibold text-lg text-gray-900 group-hover:text-legpro-primary transition-colors">
                       {job.title}
                     </h3>
-                    <p className="text-gray-600 font-medium">{getCompanyName()}</p>
+                    <p className="text-gray-600 font-medium">
+                      {getCompanyName()}
+                    </p>
                   </div>
-                  <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
-                    <BookmarkPlus className="h-4 w-4" />
-                  </Button>
                 </div>
-                
+
                 <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 mb-3">
                   <div className="flex items-center gap-1">
                     <MapPin className="h-4 w-4" />
@@ -114,7 +111,9 @@ const JobCard = ({ job, viewMode = "grid" }) => {
                   </div>
                   <div className="flex items-center gap-1">
                     <Briefcase className="h-4 w-4" />
-                    <span>{job.employmentType || job.level || "Full-time"}</span>
+                    <span>
+                      {job.employmentType || job.level || "Full-time"}
+                    </span>
                   </div>
                   <div className="flex items-center gap-1">
                     <IndianRupee className="h-4 w-4" />
@@ -125,7 +124,7 @@ const JobCard = ({ job, viewMode = "grid" }) => {
                     <span>{formatDate(job.date)}</span>
                   </div>
                 </div>
-                
+
                 {/* Tags */}
                 <div className="flex flex-wrap gap-2 mb-3">
                   {job.category && (
@@ -144,26 +143,26 @@ const JobCard = ({ job, viewMode = "grid" }) => {
                     </Badge>
                   )}
                 </div>
-                
+
                 {/* Description preview */}
                 {job.description && (
                   <p className="text-gray-600 text-sm line-clamp-2 mb-3">
-                    {job.description.replace(/<[^>]*>/g, '').slice(0, 150)}...
+                    {job.description.replace(/<[^>]*>/g, "").slice(0, 150)}...
                   </p>
                 )}
               </div>
             </div>
-            
+
             {/* Action Buttons */}
             <div className="flex flex-col gap-2 md:w-48">
-              <Button 
+              <Button
                 onClick={handleApplyClick}
                 className="bg-legpro-primary hover:bg-legpro-primary/90"
               >
                 Apply Now
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={handleViewDetails}
                 className="text-legpro-primary border-legpro-primary hover:bg-legpro-primary hover:text-white"
               >
@@ -183,31 +182,28 @@ const JobCard = ({ job, viewMode = "grid" }) => {
       <CardHeader className="pb-4">
         <div className="flex items-start justify-between">
           <div className="flex items-start gap-3">
-            <Avatar className="h-12 w-12 border rounded-none">
-              <AvatarImage 
-                src={getCompanyLogo()} 
+            <img
+                src={getCompanyLogo()}
                 alt={getCompanyName()}
-                className="object-cover h-12 w-12 rounded-none"
+                className="object-contain h-16 w-16 rounded-none"
+                onError={(e) => {
+                  e.target.src =
+                    "https://cdn.iconscout.com/icon/premium/png-256-thumb/building-icon-svg-download-png-1208046.png?f=webp&w=128";
+                }}
               />
-              <AvatarFallback>
-                <Building className="h-6 w-6" />
-              </AvatarFallback>
-            </Avatar>
-            
+
             <div className="flex-1">
               <h3 className="font-semibold text-lg text-gray-900 group-hover:text-legpro-primary transition-colors line-clamp-2">
                 {job.title}
               </h3>
-              <p className="text-gray-600 font-medium mt-1">{getCompanyName()}</p>
+              <p className="text-gray-600 font-medium mt-1">
+                {getCompanyName()}
+              </p>
             </div>
           </div>
-          
-          <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
-            <BookmarkPlus className="h-4 w-4" />
-          </Button>
         </div>
       </CardHeader>
-      
+
       <CardContent className="pt-0">
         <div className="space-y-4">
           {/* Job Details */}
@@ -216,12 +212,14 @@ const JobCard = ({ job, viewMode = "grid" }) => {
               <MapPin className="h-4 w-4 flex-shrink-0" />
               <span className="text-sm">{job.location}</span>
             </div>
-            
+
             <div className="flex items-center gap-2 text-gray-500">
               <Briefcase className="h-4 w-4 flex-shrink-0" />
-              <span className="text-sm">{job.employmentType || job.level || "Full-time"}</span>
+              <span className="text-sm">
+                {job.employmentType || job.level || "Full-time"}
+              </span>
             </div>
-            
+
             <div className="flex items-center gap-2 text-gray-500">
               <IndianRupee className="h-4 w-4 flex-shrink-0" />
               <span className="text-sm font-medium text-legpro-primary">
@@ -229,7 +227,7 @@ const JobCard = ({ job, viewMode = "grid" }) => {
               </span>
             </div>
           </div>
-          
+
           {/* Tags */}
           <div className="flex flex-wrap gap-2">
             {job.category && (
@@ -248,31 +246,31 @@ const JobCard = ({ job, viewMode = "grid" }) => {
               </Badge>
             )}
           </div>
-          
+
           {/* Description */}
           {job.description && (
             <p className="text-gray-600 text-sm line-clamp-3">
-              {job.description.replace(/<[^>]*>/g, '').slice(0, 120)}...
+              {job.description.replace(/<[^>]*>/g, "").slice(0, 120)}...
             </p>
           )}
-          
+
           {/* Posted Date */}
           <div className="flex items-center gap-2 text-xs text-gray-400">
             <Clock className="h-3 w-3" />
             <span>Posted {formatDate(job.date)}</span>
           </div>
-          
+
           {/* Action Buttons */}
           <div className="flex gap-2 pt-2">
-            <Button 
+            <Button
               onClick={handleApplyClick}
               className="flex-1 bg-legpro-primary hover:bg-legpro-primary/90"
               size="sm"
             >
               Apply Now
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={handleViewDetails}
               className="text-legpro-primary border-legpro-primary hover:bg-legpro-primary hover:text-white"
               size="sm"

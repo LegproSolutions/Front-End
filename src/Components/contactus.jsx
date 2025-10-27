@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
-import { Mail, Phone, MapPin, Send, User, MessageSquare, Clock, Linkedin, Twitter, Facebook } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, User, MessageSquare, Clock, Linkedin, Twitter, Facebook, Instagram } from 'lucide-react';
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -99,18 +99,21 @@ const ContactUs = () => {
                   <div className="flex space-x-4">
                     <a 
                       href="#" 
+                      target="_blank"
                       className="bg-[#E8F0FF] hover:bg-[#D1E3FF] p-2 rounded-full transition-colors"
                     >
                       <Linkedin className="h-5 w-5 text-[#0F3B7A]" />
                     </a>
                     <a 
-                      href="#" 
+                      target="_blank"
+                      href="https://www.instagram.com/jobmela.co/"
                       className="bg-[#E8F0FF] hover:bg-[#D1E3FF] p-2 rounded-full transition-colors"
                     >
-                      <Twitter className="h-5 w-5 text-[#0F3B7A]" />
+                      <Instagram className="h-5 w-5 text-[#0F3B7A]" />
                     </a>
                     <a 
-                      href="#" 
+                      target="_blank"
+                      href="https://www.facebook.com/profile.php?id=61581203214167"
                       className="bg-[#E8F0FF] hover:bg-[#D1E3FF] p-2 rounded-full transition-colors"
                     >
                       <Facebook className="h-5 w-5 text-[#0F3B7A]" />

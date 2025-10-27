@@ -70,7 +70,7 @@ const JobManagement = () => {
     const fetchJobs = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`${backendUrl}/api/jobs/`, {
+        const response = await axios.get(`${backendUrl}/api/admin/jobs`, {
           withCredentials: true,
         });
         if (response.data.success) {

@@ -10,6 +10,7 @@ import JobManagement from "../../Components/Admin/JobManagement";
 import CompaniesManagement from "../../Components/Admin/CompaniesManagement";
 import Analytics from "../../Components/Admin/Analytics";
 import UsersManagement from "../../Components/Admin/UsersManagement";
+import SubAdmins from "../../Components/Admin/SubAdmins";
 
 const AdminDashboard = () => {
   const { adminToken } = useContext(AdminContext);
@@ -44,6 +45,8 @@ const AdminDashboard = () => {
         return <JobManagement />;
       case "all_user":
         return <UsersManagement />;
+      case "sub_admins":
+        return <SubAdmins />;
       case "companies":
         return <CompaniesManagement />;
       case "analytics":

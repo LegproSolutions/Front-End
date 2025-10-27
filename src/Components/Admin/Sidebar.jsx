@@ -27,6 +27,11 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
       value: "companies",
     },
     {
+      name: "SubAdmins",
+      icon: <User className="w-5 h-5" />,
+      value: "sub_admins",
+    },
+    {
       name: "Analytics",
       icon: <BarChart3 className="w-5 h-5" />,
       value: "analytics",

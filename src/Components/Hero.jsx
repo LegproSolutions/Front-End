@@ -1,230 +1,72 @@
-import React, { useState, useContext } from "react";
-import {
-  Search,
-  MapPin,
-  Briefcase,
-  TrendingUp,
-  Users,
-  Building,
-  Star,
-  ArrowRight,
-  CheckCircle,
-} from "lucide-react";
-import { AppContext } from "../context/AppContext";
-import { JobLocations, assets } from "../assets/assets";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { Card, CardContent } from "../components/ui/card";
-import { Badge } from "../components/ui/badge";
-import { cn } from "../lib/utils";
+import React, { useEffect, useState } from "react";
 
 const Hero = () => {
-  const {
-    setSearchFilter,
-    setIsSearched,
-    homeJobs = [],
-  } = useContext(AppContext);
+  const [stats, setStats] = useState({ companies: 0, jobs: 0, applications: 0 });
 
-  const [titleInput, setTitleInput] = useState("");
-  const [locationInput, setLocationInput] = useState("");
-  const [selectedJobType, setSelectedJobType] = useState("");
-
-  const jobTitles = [
-    ...new Set(homeJobs.map((job) => job.title).filter(Boolean)),
-  ];
-  const jobLocations = [
-    ...new Set([
-      ...homeJobs.map((job) => job.location).filter(Boolean),
-      ...JobLocations,
-    ]),
-  ];
-
-  const jobTypes = [
-    "Full-time",
-    "Part-time",
-    "Contract",
-    "Remote",
-    "Internship",
-  ];
-
-  const handleSearch = () => {
-    const searchFilters = {
-      title: titleInput,
-      location: locationInput,
-      jobType: selectedJobType,
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await fetch("https://bitojobs-backend-mn78.onrender.com/new-stats");
+        const data = await response.json();
+        setStats({
+          companies: data?.registeredCompanies || 0,
+          jobs: data?.verifiedJobs || 0,
+          applications: data?.applications || 0,
+        });
+      } catch (error) {
+        console.error("Failed to fetch stats", error);
+      }
     };
 
-    setSearchFilter(searchFilters);
-    setIsSearched(true);
-
-    document.querySelector("#job-listing")?.scrollIntoView({
-      behavior: "smooth",
-    });
-  };
-
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter") {
-      handleSearch();
-    }
-  };
-
-  const features = [
-    "Advanced job matching algorithm",
-    "Direct employer connections",
-    "24/7 application support",
-    "Career guidance & tips",
-  ];
+    fetchStats();
+  }, []);
 
   return (
-    <div className="relative min-h-screen bg-gray-50">
+    <section className="relative w-full px-4 py-10 md:py-16 bg-gradient-to-b from-white to-slate-50 overflow-hidden">
+      {/* Background Blur */}
+      <div className="absolute inset-0 -z-10 overflow-hidden">
+        <div className="absolute top-[-200px] left-1/2 -translate-x-1/2 w-[900px] h-[900px] rounded-full bg-gradient-to-r from-blue-200 to-purple-200 blur-[120px] opacity-40" />
+      </div>
 
-      <div className="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] -z-10" />
+      <div className="max-w-5xl mx-auto text-center">
+        {/* Search Bar on Top */}
+        <div className="w-full max-w-xl mx-auto mb-6">
+          <input
+            type="text"
+            placeholder="Search for jobs, companies..."
+            className="w-full px-4 py-3 rounded-xl border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          />
+        </div>
 
-      <div className="container mx-auto px-4 pt-24 pb-16">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+        {/* Title */}
+        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 leading-snug">
+          Find Opportunities That Match Your Skills
+        </h1>
 
-          {/* Left Section */}
-          <div className="space-y-8">
+        {/* Subtitle */}
+        <p className="mt-3 text-gray-600 text-base md:text-lg">
+          Search, explore, and apply for jobs across verified companies.
+        </p>
 
-            <div className="space-y-4">
-              <Badge
-                variant="outline"
-                className="w-fit text-legpro-primary border-legpro-primary"
-              >
-                🚀 India's Leading Job Portal
-              </Badge>
-
-              <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 leading-tight">
-                Find Your
-                <span className="text-legpro-primary"> Dream Job</span>
-                <br />
-                Today
-              </h1>
-
-              <p className="text-xl text-gray-600 max-w-lg">
-                Connect with top employers and discover opportunities that match
-                your skills. Join thousands of professionals who found their
-                perfect career with Job Mela.
-              </p>
-            </div>
-
-            {/* Search Card */}
-            <Card className="p-6 shadow-xl border-0 bg-white/80 backdrop-blur">
-              <div className="space-y-4">
-                <div className="grid md:grid-cols-3 gap-4">
-
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                    <Input
-                      type="text"
-                      placeholder="Job title or keyword"
-                      value={titleInput}
-                      onChange={(e) => setTitleInput(e.target.value)}
-                      onKeyPress={handleKeyPress}
-                      className="pl-10 h-12 text-base"
-                      list="job-titles"
-                    />
-                    <datalist id="job-titles">
-                      {jobTitles.map((title, index) => (
-                        <option key={index} value={title} />
-                      ))}
-                    </datalist>
-                  </div>
-
-                  <div className="relative">
-                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                    <Input
-                      type="text"
-                      placeholder="Location"
-                      value={locationInput}
-                      onChange={(e) => setLocationInput(e.target.value)}
-                      onKeyPress={handleKeyPress}
-                      className="pl-10 h-12 text-base"
-                      list="job-locations"
-                    />
-                    <datalist id="job-locations">
-                      {jobLocations.map((location, index) => (
-                        <option key={index} value={location} />
-                      ))}
-                    </datalist>
-                  </div>
-                </div>
-
-                <Button
-                  onClick={handleSearch}
-                  className="w-full h-12 text-base font-semibold bg-legpro-primary hover:bg-legpro-primary-hover text-white"
-                >
-                  <Search className="mr-2 h-5 w-5" />
-                  Search Jobs
-                </Button>
-              </div>
-            </Card>
-
-            {/* Features */}
-            <div className="grid grid-cols-2 gap-3">
-              {features.map((feature, index) => (
-                <div key={index} className="flex items-center space-x-2">
-                  <CheckCircle className="h-4 w-4 text-legpro-accent" />
-                  <span className="text-sm text-gray-600">{feature}</span>
-                </div>
-              ))}
-            </div>
-
-            <Button
-              size="lg"
-              className="bg-legpro-primary hover:bg-legpro-primary/90"
-              onClick={() =>
-                document.querySelector("#job-listing")?.scrollIntoView({
-                  behavior: "smooth",
-                })
-              }
-            >
-              Browse All Jobs
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-
+        {/* Stats */}
+        <div className="mt-10 flex flex-wrap justify-center gap-6 md:gap-12">
+          <div className="text-center">
+            <p className="text-3xl font-bold text-blue-600">{stats.companies}</p>
+            <p className="text-gray-700 text-sm md:text-base">Registered Companies</p>
           </div>
 
-          {/* Right Section */}
-          <div className="relative">
-            <div className="relative bg-legpro-primary/10 rounded-3xl p-8">
-              <img
-                src="/professional-businesswoman.jpg"
-                alt="Indian business professional smiling"
-                loading="eager"
-                className="w-full h-auto max-w-md mx-auto scale-150 -translate-x-10 rounded-2xl"
-              />
-
-              <div className="absolute -top-4 -left-4 bg-white rounded-xl p-3 shadow-lg">
-                <div className="flex items-center space-x-2">
-                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                    <CheckCircle className="w-4 h-4 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-sm">Job Match</p>
-                    <p className="text-xs text-gray-500">95% Success</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="absolute -bottom-4 -right-4 bg-white rounded-xl p-3 shadow-lg">
-                <div className="flex items-center space-x-2">
-                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                    <TrendingUp className="w-4 h-4 text-legpro-primary" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-sm">Career Growth</p>
-                    <p className="text-xs text-gray-500">Fast Track</p>
-                  </div>
-                </div>
-              </div>
-
-            </div>
+          <div className="text-center">
+            <p className="text-3xl font-bold text-blue-600">{stats.jobs}</p>
+            <p className="text-gray-700 text-sm md:text-base">Verified Jobs</p>
           </div>
 
+          <div className="text-center">
+            <p className="text-3xl font-bold text-blue-600">{stats.applications}</p>
+            <p className="text-gray-700 text-sm md:text-base">Applications Submitted</p>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

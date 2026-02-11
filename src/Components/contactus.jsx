@@ -73,8 +73,8 @@ const ContactUs = () => {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-700">Call Us</p>
-                    <p className="text-sm text-gray-600">+1 (555) 123-4567</p>
-                    <p className="text-sm text-gray-600">Mon-Fri, 9:00 AM - 6:00 PM</p>
+                    <p className="text-sm text-gray-600">+91 - 7303086551 </p> 
+                    <p className="text-sm text-gray-600">Mon-Sat, 9:00 AM - 6:00 PM</p>
                   </div>
                 </div>
 
@@ -85,9 +85,9 @@ const ContactUs = () => {
                   <div>
                     <p className="text-sm font-medium text-gray-700">Office Address</p>
                     <p className="text-sm text-gray-600">
-                      123 Job Mela Lane, 
-                      <br />Business District,
-                      <br />City, Country 12345
+                      Job Mela G 005,H36,Sector-63, 
+                      <br /> GautamBudh Nagar,
+                      <br /> Noida,UP - 201301,India
                     </p>
                   </div>
                 </div>

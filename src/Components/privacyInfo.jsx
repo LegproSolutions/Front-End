@@ -32,9 +32,7 @@ const PrivacyInfo = () => {
           <Card className="border-none shadow-lg mb-8">
             <CardContent className="p-6 sm:p-8">
               <p className="text-gray-700 leading-relaxed text-lg mb-4">
-                At <strong className="text-[#0F3B7A]">Job Mela</strong>, we are committed to protecting your
-                personal information and your right to privacy. This Privacy Policy describes how we collect,
-                use, and protect your information when you use our platform.
+               At <strong className="text-[#0F3B7A]">Jobmela</strong>, powered by Legpro Consultants Pvt. Ltd., we value your privacy. This Privacy Policy explains how we collect, use, store, and protect your personal information when you use our platform.
               </p>
               <p className="text-gray-700 leading-relaxed">
                 Last updated: June 2023

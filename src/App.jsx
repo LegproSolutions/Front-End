@@ -155,7 +155,7 @@ const App = () => {
           </Route>
           <Route path="/privacypolicy" element={<PrivacyInfo />} />
           <Route path="/cookiepolicy" element={<CookiePolicy />} />
-          <Route path="/TermsAndConditions" element={<TermsAndConditions />} />
+          <Route path="/termsconditions" element={<TermsAndConditions />} />
           <Route path="/contactus" element={<ContactUs />} />
 
           

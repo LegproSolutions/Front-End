@@ -8,7 +8,19 @@ const Footer = () => {
 
   return (
     <footer className="bg-white text-gray-800 py-8 px-6 sm:px-12">
-      <div className="container mx-auto flex flex-col lg:flex-row items-start justify-between space-y-8 lg:space-y-0">
+
+  {/* Top Description Section */}
+  <div className="container mx-auto mb-8 border-b border-gray-300 pb-6">
+    <p className="text-sm md:text-base leading-relaxed text-gray-700">
+      Jobmela, powered by Legpro Consultants Pvt. Ltd., goes beyond traditional job platforms. Our mission is to connect ITI, Diploma, and skilled professionals with leading industries, ensuring faster recruitment, quality talent, and a smooth hiring process for both employers and candidates
+    </p>
+  </div>
+
+  {/* Footer Columns Section */}
+  <div className="container mx-auto flex flex-col lg:flex-row items-start justify-between space-y-8 lg:space-y-0">
+
+    {/* Left Section - Logo & Social Media */}
+
         {/* Left Section - Logo & Social Media */}
         <div className="w-full lg:w-1/3 space-y-4 sm:space-y-6 text-center lg:text-left">
           <div 

@@ -109,12 +109,12 @@ const Footer = () => {
               </li> 
               {/* Terms & Conditions Added */}
     <li>
-      <Link
-        to="/termsconditions"
+      <Link to="/termsconditions"
         className="hover:text-gray-900 transition"
-      >
-        Terms & Conditions
-      </Link>
+        > 
+  Terms & Conditions
+</Link>
+
     </li> 
               <li>
                 

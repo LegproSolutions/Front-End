@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
-import Navbar from "../Components/Navbar";
-import Footer from "../Components/Footer";
+import Navbar from "@/Components/Navbar";
+import Footer from "@/Components/Footer";
 import axios from "../utils/axiosConfig";
 import toast from "react-hot-toast";
 import {
@@ -22,8 +22,8 @@ import {
   Building,
   Layers
 } from "lucide-react";
-import { Card, CardContent } from "../components/ui/card";
-import { Badge } from "../components/ui/badge";
+import { Card, CardContent } from "@/Components/ui/card";
+import { Badge } from "@/Components/ui/badge";
 
 const JobDetails = () => {
   const { id } = useParams();
@@ -419,3 +419,4 @@ const InfoItem = ({ icon, label, value }) => (
 );
 
 export default JobDetails;
+

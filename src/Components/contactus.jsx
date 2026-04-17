@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { Mail, Phone, MapPin, Send, User, MessageSquare, Clock, Linkedin, Twitter, Facebook, Instagram } from 'lucide-react';
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import { Label } from "@/Components/ui/label";
+import { Input } from "@/Components/ui/input";
+import { Textarea } from "@/Components/ui/textarea";
+import { Button } from "@/Components/ui/button";
+import { Card, CardHeader, CardContent, CardFooter } from "@/Components/ui/card";
+import { Separator } from "@/Components/ui/separator";
 
 const ContactUs = () => {
   const [formData, setFormData] = useState({
@@ -273,3 +273,5 @@ const ContactUs = () => {
 };
 
 export default ContactUs;
+
+

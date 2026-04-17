@@ -8,12 +8,12 @@ import {
 } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import Navbar from "../../Components/Navbar";
+import Navbar from "@/Components/Navbar";
 import { AppContext } from "../../context/AppContext";
 import axios from "../../utils/axiosConfig";
-// import EducationForm from "../Components/EducationForm";
+// import EducationForm from "@/Components/EducationForm";
 import toast from "react-hot-toast";
-import EducationForm from "../../Components/Form/EducationForm";
+import EducationForm from "@/Components/Form/EducationForm";
 
 const ApplyJobForm = ({ jobTitle}) => {
   const { id: jobId } = useParams();
@@ -1102,3 +1102,5 @@ const onCancel=()=>{
 };
 
 export default ApplyJobForm;
+
+

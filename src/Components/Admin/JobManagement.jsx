@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/Components/ui/badge";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/Components/ui/card";
 import axios from "../../utils/axiosConfig";
 import { exportToCSV } from "../../utils/csvExport";
 
@@ -16,7 +16,7 @@ import EditJobModal from "./JobManagementComponents/EditJobModal";
 import JobCard from "./JobManagementComponents/JobCard";
 import JobFilters from "./JobManagementComponents/JobFilters";
 import UserProfileModal from "./JobManagementComponents/UserProfileModal";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/Components/ui/button";
 import { Building2 } from "lucide-react";
 
 const backendUrl = import.meta.env?.VITE_API_URL;
@@ -563,3 +563,5 @@ const JobManagement = () => {
 };
 
 export default JobManagement;
+
+

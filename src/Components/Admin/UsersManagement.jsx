@@ -1,10 +1,10 @@
 import { Calendar, Mail, Phone, Search, User, Download, Upload } from "lucide-react";
 import { useEffect, useMemo, useState, useRef } from "react";
 import toast from "react-hot-toast";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Badge } from "@/Components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
+import { Input } from "@/Components/ui/input";
+import { Button } from "@/Components/ui/button";
 import axios from "../../utils/axiosConfig";
 import { exportToCSV } from "../../utils/csvExport";
 
@@ -222,3 +222,5 @@ const UsersManagement = () => {
 };
 
 export default UsersManagement;
+
+

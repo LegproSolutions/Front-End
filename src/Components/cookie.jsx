@@ -13,8 +13,8 @@ import {
   Check,
   X 
 } from 'lucide-react';
-import { Card, CardHeader, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import { Card, CardHeader, CardContent } from "@/Components/ui/card";
+import { Separator } from "@/Components/ui/separator";
 
 const CookiePolicy = () => {
   return (
@@ -291,3 +291,4 @@ const CookiePolicy = () => {
 };
 
 export default CookiePolicy;
+

@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { AppContext } from "../../context/AppContext";
-import Navbar from "../../Components/Navbar";
+import Navbar from "@/Components/Navbar";
 import { assets } from "../../assets/assets";
 import moment from "moment";
-import JobCard from "../../Components/Jobs/Jobcard";
+import JobCard from "@/Components/Jobs/Jobcard";
 import toast from "react-hot-toast";
 import { ChevronLeft, Share2, Bookmark, ExternalLink } from "lucide-react";
 const backendUrl = import.meta.env?.VITE_API_URL;
@@ -445,3 +445,4 @@ const ApplyJob = ({ previewMode = false }) => {
 };
 
 export default ApplyJob;
+

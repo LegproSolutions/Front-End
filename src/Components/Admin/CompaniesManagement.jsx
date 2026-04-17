@@ -10,10 +10,10 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { Badge } from "@/Components/ui/badge";
+import { Button } from "@/Components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
+import { Input } from "@/Components/ui/input";
 import axios from "../../utils/axiosConfig";
 import { exportToCSV } from "../../utils/csvExport";
 
@@ -277,3 +277,4 @@ const CompaniesManagement = () => {
 };
 
 export default CompaniesManagement;
+

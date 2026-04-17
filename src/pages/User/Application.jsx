@@ -1,8 +1,8 @@
 import moment from "moment";
 import { useContext } from "react";
 import { FaFileAlt } from "react-icons/fa";
-import Footer from "../../Components/Footer";
-import Navbar from "../../Components/Navbar";
+import Footer from "@/Components/Footer";
+import Navbar from "@/Components/Navbar";
 import { AppContext } from "../../context/AppContext";
 
 const Application = () => {
@@ -116,3 +116,4 @@ const Application = () => {
 };
 
 export default Application;
+

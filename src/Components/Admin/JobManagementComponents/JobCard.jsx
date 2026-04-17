@@ -1,7 +1,7 @@
 import React from "react";
-import { Card, CardHeader, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardContent } from "@/Components/ui/card";
+import { Badge } from "@/Components/ui/badge";
+import { Button } from "@/Components/ui/button";
 import { MapPin, IndianRupee, Clock, Users, Building2, Calendar, Eye, Edit, Trash2 } from "lucide-react";
 
 const JobCard = ({ job, onViewApplications, onEdit, onDelete, getStatusBadge, formatSalary, formatDate }) => {
@@ -47,3 +47,5 @@ const JobCard = ({ job, onViewApplications, onEdit, onDelete, getStatusBadge, fo
 };
 
 export default JobCard;
+
+

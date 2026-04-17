@@ -2,7 +2,7 @@ import React from "react";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { Shield, Database, Lock, RefreshCw, Mail, FileText, User, Globe, Eye, Bell } from 'lucide-react';
-import { Card, CardContent } from "../components/ui/card";
+import { Card, CardContent } from "@/Components/ui/card";
 
 const PrivacyInfo = () => {
   return (
@@ -246,3 +246,4 @@ const PrivacyInfo = () => {
 };
 
 export default PrivacyInfo;
+

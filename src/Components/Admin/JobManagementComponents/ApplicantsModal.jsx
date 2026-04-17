@@ -1,7 +1,7 @@
 import React from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/Components/ui/button";
+import { Card, CardHeader, CardContent } from "@/Components/ui/card";
+import { Badge } from "@/Components/ui/badge";
 import { Users, User, Phone, Mail, Download, X } from "lucide-react";
 
 const ApplicantsModal = ({ applicantsModal, loadingApplicants, closeApplicantsModal, exportApplicantsCSV, handleViewUserProfile, getApplicationStatusBadge }) => {
@@ -77,3 +77,5 @@ const ApplicantsModal = ({ applicantsModal, loadingApplicants, closeApplicantsMo
 };
 
 export default ApplicantsModal;
+
+

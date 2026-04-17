@@ -3,14 +3,14 @@ import { AdminContext } from "../../context/AdminContext";
 import { AppContext } from "../../context/AppContext";
 import axios from "axios";
 import toast from "react-hot-toast";
-import Sidebar from "../../Components/Admin/Sidebar";
+import Sidebar from "@/Components/Admin/Sidebar";
 import AdminNavbar from "./AdminNavbar";
-import JobCreationForm from "../../Components/Admin/JobCreationForm";
-import JobManagement from "../../Components/Admin/JobManagement";
-import CompaniesManagement from "../../Components/Admin/CompaniesManagement";
-import Analytics from "../../Components/Admin/Analytics";
-import UsersManagement from "../../Components/Admin/UsersManagement";
-import SubAdmins from "../../Components/Admin/SubAdmins";
+import JobCreationForm from "@/Components/Admin/JobCreationForm";
+import JobManagement from "@/Components/Admin/JobManagement";
+import CompaniesManagement from "@/Components/Admin/CompaniesManagement";
+import Analytics from "@/Components/Admin/Analytics";
+import UsersManagement from "@/Components/Admin/UsersManagement";
+import SubAdmins from "@/Components/Admin/SubAdmins";
 
 const AdminDashboard = () => {
   const { adminToken } = useContext(AdminContext);
@@ -83,3 +83,5 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+
+

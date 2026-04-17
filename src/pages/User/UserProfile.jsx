@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
-import Navbar from "../../Components/Navbar";
-import UserProfileForm from "../../Components/Form/UserProfileForm";
+import Navbar from "@/Components/Navbar";
+import UserProfileForm from "@/Components/Form/UserProfileForm";
 import { AppContext } from "../../context/AppContext";
 
 const UserProfile = () => {
@@ -21,3 +21,4 @@ const UserProfile = () => {
 };
 
 export default UserProfile;
+

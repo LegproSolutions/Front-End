@@ -9,9 +9,9 @@ import {
 } from "lucide-react";
 import { useContext, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
+import { Badge } from "../components/ui/badge";
+import { Button } from "../components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,8 +19,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
+} from "../components/ui/dropdown-menu";
+import { Sheet, SheetContent, SheetTrigger } from "../components/ui/sheet";
 import { AppContext } from "../context/AppContext";
 import { cn } from "../lib/utils";
 import UserLogin from "./Auth/UserLogin";

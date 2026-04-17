@@ -4,12 +4,12 @@ import axios from "../../utils/axiosConfig";
 import toast from "react-hot-toast";
 import { Eye, EyeOff, Lock, Mail, User, Briefcase, Users, Trophy, Phone } from "lucide-react";
 import { useGoogleLogin } from "@react-oauth/google";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
-import { Dialog, DialogContent } from "../ui/dialog";
-import { Separator } from "../ui/separator";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Label } from "../../components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
+import { Dialog, DialogContent } from "../../components/ui/dialog";
+import { Separator } from "../../components/ui/separator";
 const backendUrl = import.meta.env?.VITE_API_URL;
 
 const UserLogin = ({ isOpen, onClose }) => {

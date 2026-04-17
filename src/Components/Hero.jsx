@@ -13,10 +13,10 @@ import {
 } from "lucide-react";
 import { AppContext } from "../context/AppContext";
 import { JobLocations, assets } from "../assets/assets";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Card, CardContent } from "./ui/card";
-import { Badge } from "./ui/badge";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Card, CardContent } from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
 import { cn } from "../lib/utils";
 
 const Hero = () => {

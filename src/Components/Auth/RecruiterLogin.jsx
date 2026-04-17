@@ -4,11 +4,11 @@ import axios from "../../utils/axiosConfig"
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { Lock, Eye, EyeOff, User, Mail, Phone, Building2, Users2, Target, Upload } from "lucide-react";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
-import { Dialog, DialogContent } from "../ui/dialog";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Label } from "../../components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
+import { Dialog, DialogContent } from "../../components/ui/dialog";
 
 const backendUrl = import.meta.env?.VITE_API_URL;
 
